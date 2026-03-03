@@ -1,0 +1,1 @@
+# calypsonet-terminal-genericcard-uml-api
