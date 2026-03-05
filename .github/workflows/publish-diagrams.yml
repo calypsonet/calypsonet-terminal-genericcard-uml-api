@@ -1,4 +1,4 @@
-name: Publish Calypsonet Terminal Genericcard API - UML class diagrams to GH pages
+name: Publish Calypsonet Terminal Generic Card API - UML class diagrams to GH pages
 
 on:
   push:
