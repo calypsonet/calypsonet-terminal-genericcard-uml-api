@@ -53,12 +53,14 @@ legend top
 end legend
 
 package "terminal.genericcard" as root {
+    +class "**final** GenericCardApiProperties" as ApiProperties <<green>> {
+        +{static} **final** String VERSION
+    }
     +interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
         +GenericCardSelectionExtension createGenericCardSelectionExtension ()
 
         +CardTransactionManager createCardTransaction (<back:yellow>CardReader</back> cardReader, <back:yellow>SmartCard</back> card)
     }
-
 
     +interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
         +GenericCardSelectionExtension addSuccessfulStatusWord (int statusWord)
