@@ -1,6 +1,6 @@
 = Terminal Generic Card API -- Technical Specification
 Calypso Networks Association <https://calypsonet.org>
-v1.0.0-SNAPSHOT, {docdate}
+v2.0.0-SNAPSHOT, {docdate}
 :doctype: book
 :toc: left
 :toclevels: 4
@@ -28,7 +28,7 @@ v1.0.0-SNAPSHOT, {docdate}
 :short-name: CNA
 :spec-name: Terminal Generic Card API
 :spec-id: CNA-TGC-API
-:spec-version: 1.0.0-SNAPSHOT
+:spec-version: 2.0.0-SNAPSHOT
 
 [abstract]
 == Abstract
@@ -39,8 +39,8 @@ It defines, in a language-agnostic way, the interfaces, classes, enumerations, e
 relationships and behavioural requirements that any conforming implementation of the {spec-name} MUST satisfy.
 
 The {spec-name} is part of the broader CNA *Terminal API* family. It exposes the minimal contract required to
-exchange raw APDUs with a card that has been selected through the *Terminal Reader API*, without prescribing any
-specific card application model.
+exchange raw APDUs with an ISO/IEC 7816-4 card that has been selected through the *Terminal Reader API*, without
+prescribing any specific card application model.
 
 [discrete]
 == Document Status
@@ -49,20 +49,15 @@ specific card application model.
 |===
 | Specification ID    | {spec-id}
 | Version             | {spec-version}
-| Status              | Working Draft
+| Status              | Working Draft -- submitted to the CNA TC Terminal for validation
 | Editor              | {organization}
 | Reference model     | link:api_class_diagram.puml[`api_class_diagram.puml`] / link:api_class_diagram.svg[`api_class_diagram.svg`]
 | Reference license   | Eclipse Public License -- v 2.0 (EPL-2.0)
 |===
 
-[discrete]
-== Revision History
-
-[cols="1,2,2,5", options="header"]
-|===
-| Version | Date | Editor | Description
-| {spec-version} | _TBD_ | CNA  | _Initial working draft._
-|===
+NOTE: The present document specifies the {spec-version} of the {spec-name} as an *initial release*, without
+historical reference to earlier drafts. It defines a single, coherent baseline against which conforming
+implementations are evaluated.
 
 // =============================================================================
 == Introduction
@@ -75,11 +70,12 @@ The {spec-name} defines the contract used by terminal applications that need to 
 
 * a card-selection extension that allows additional successful status words to be declared for the *Select
   Application* APDU,
-* a minimal transaction manager that prepares APDU commands and processes them as a single batch, returning the
-  raw responses to the application.
+* a minimal transaction manager that prepares APDU commands, attaches an optional command identifier and an
+  optional per-command duration bound (relay-attack countermeasure), and processes them as a single batch,
+  returning the raw responses to the application.
 
-Conforming implementations MUST guarantee interoperability with reader implementations of the
-[CNA-TR-API] specification.
+Conforming implementations MUST guarantee interoperability with reader implementations of the [CNA-TR-API]
+specification.
 
 === Scope
 
@@ -87,7 +83,8 @@ This specification covers:
 
 * the factory used to instantiate the public types of the API,
 * the card-selection extension used to enrich the selection scenario for generic cards,
-* the transaction manager used to exchange APDUs with the selected card,
+* the transaction manager used to prepare and exchange APDUs with the selected card, including the per-command
+  identifier and the per-command duration bound,
 * the property holder exposing the API version.
 
 The following topics are *out of scope*:
@@ -104,9 +101,12 @@ A software product conforms to this specification if and only if:
   prescribed in this document,
 . it preserves the structural and behavioural relationships described in <<sec_architecture>>.
 
-Throughout this specification, the key words **MUST**, **MUST NOT**, **SHALL**, **SHALL NOT**, **SHOULD**,
-**SHOULD NOT**, **RECOMMENDED**, **MAY** and **OPTIONAL** are to be interpreted as described in **RFC 2119** and
-**RFC 8174** when, and only when, they appear in all capitals.
+Throughout this specification, the key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**,
+**MAY** and **OPTIONAL** are to be interpreted as described in **RFC 2119** and **RFC 8174** when, and only when,
+they appear in all capitals.
+
+In conformance with RFC 2119, **SHALL** is equivalent to **MUST**; this specification uses **MUST** exclusively in
+order to avoid ambiguity.
 
 === Document Conventions
 
@@ -127,6 +127,7 @@ equivalent native type. Implementations MUST preserve the semantic intent rather
 | `string`        | Sequence of characters, UTF-8 encoded by default.                | `String` (Java), `string` (C#), `str` (Rust/Python).
 | `boolean`       | Two-state truth value.                                           | `boolean`, `bool`.
 | `integer`       | Signed 32-bit integer.                                           | `int`, `Int32`.
+| `long`          | Signed 64-bit integer.                                           | `long`, `Int64`.
 | `byte`          | Signed 8-bit value.                                              | `byte`, `i8`.
 | `byte array`    | Ordered sequence of octets.                                      | `byte[]`, `[u8]`, `bytes`.
 | `list<T>`       | Ordered collection of `T` values, may contain duplicates.        | `List<T>`, `Vec<T>`.
@@ -140,7 +141,6 @@ Each operation defined in this document is described by a table of the form:
 [cols="1h,4", grid=rows, frame=ends]
 |===
 | Signature   | The operation's language-agnostic signature.
-| Since       | The version of the specification that introduced the operation.
 | Description | A normative description of the operation's behaviour.
 | Parameters  | A description of each input parameter.
 | Returns     | A description of the returned value, if any.
@@ -157,17 +157,13 @@ Each operation defined in this document is described by a table of the form:
 | RFC 2119
 | _Key words for use in RFCs to Indicate Requirement Levels_, S. Bradner, March 1997.
 
-| [[ref_rfc8174]] [RFC 8174]
-| RFC 8174
-| _Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words_, B. Leiba, May 2017.
-
 | [[ref_iso7816]] [ISO/IEC 7816-4]
 | ISO/IEC 7816-4
 | _Identification cards -- Integrated circuit cards -- Part 4: Organization, security and commands for interchange_.
 
 | [[ref_cna_tr]] [CNA-TR-API]
 | CNA-TR-API
-| _Terminal Reader API Specification_, {organization}.
+| _Calypsonet Terminal Reader API Specification_, {organization}.
 |===
 
 // =============================================================================
@@ -179,12 +175,10 @@ Each operation defined in this document is described by a table of the form:
 |===
 | Term              | Definition
 
-| APDU              | Application Protocol Data Unit, the message format used between the terminal and the card (ISO/IEC 7816-4).
-| Card              | Any physical or virtual smart card that can be presented to a reader.
-| Card Application  | Application Dedicated File (DF) selected on a card, identified by its AID, as defined in ISO/IEC 7816-4.
-| Generic Card      | Any card whose selection and APDU dialogue can be performed using only the constructs defined by this specification, without recourse to a card-product-specific extension.
-| Status Word       | The two-byte trailer of an APDU response indicating the outcome of the command (ISO/IEC 7816-4, §5.1.3).
-| SPI               | Service Provider Interface -- a set of interfaces designed to be implemented by an extension module.
+| APDU              | Application Protocol Data Unit, the message format used between the terminal and the card.
+| Card Reader       | Hardware or software component capable of detecting cards and exchanging data with them.
+| Command Identifier| Application-supplied integer attached to a prepared APDU, used to retrieve the corresponding response or to identify the failing command in case of error.
+| Relay Attack      | Software-level attack consisting in interposing a relay between the card and the terminal to redirect APDU exchanges to a distant card.
 |===
 
 === Abbreviations
@@ -195,12 +189,9 @@ Each operation defined in this document is described by a table of the form:
 
 | AID  | Application IDentifier
 | APDU | Application Protocol Data Unit
-| CLA  | CLAss byte of an APDU
 | CNA  | Calypso Networks Association
-| INS  | INStruction byte of an APDU
 | ISO  | International Organization for Standardization
 | SW   | Status Word
-| UML  | Unified Modelling Language
 |===
 
 // =============================================================================
@@ -208,9 +199,6 @@ Each operation defined in this document is described by a table of the form:
 == Architectural Overview
 
 === Functional positioning
-
-The {spec-name} extends the *Terminal Reader API* with the minimal contract required to dialogue with a generic
-card. The application uses the *Reader API* to select the card, and the *Generic Card API* to exchange APDUs.
 
 [plantuml, target=architecture-overview, format=svg]
 ....
@@ -220,35 +208,32 @@ skinparam roundCorner 8
 skinparam ArrowColor #2C3E50
 
 component "Terminal Application" as App
-component "Terminal Generic Card API\n(this specification)" as GC
+component "Generic Card API\n(this specification)" as GC
 component "Terminal Reader API\n[CNA-TR-API]" as TR
-component "Reader Driver" as Drv
 
 App --> GC : uses
 App --> TR : uses
-GC  --> TR : extends
-TR  --> Drv : delegated to
+GC  ..> TR : depends on
 @enduml
 ....
 
 === Logical packages
 
+The specification is organised in a single logical package:
+
 [cols="1,1,4", options="header"]
 |===
-| Package           | Role     | Summary
+| Package        | Role     | Summary
 
-| `genericcard`     | Public API
-| Factory, properties, selection extension and transaction manager for generic cards.
+| `genericcard`  | Public API
+| Factory, selection extension and transaction manager. Properties.
 |===
 
 [[sec_class_diagram]]
 === Reference class diagram
 
-The normative class diagram of this specification is provided as a PlantUML source file alongside this document:
-
 * link:api_class_diagram.puml[`api_class_diagram.puml`] -- canonical UML model,
-* link:api_class_diagram.svg[`api_class_diagram.svg`]   -- rendered representation,
-* link:api_class_diagram_diff.puml[`api_class_diagram_diff.puml`] -- delta against the previous version.
+* link:api_class_diagram.svg[`api_class_diagram.svg`]   -- rendered representation.
 
 image::../api_class_diagram.svg[Terminal Generic Card API class diagram, align=center]
 
@@ -258,7 +243,7 @@ image::../api_class_diagram.svg[Terminal Generic Card API class diagram, align=c
 
 === Package genericcard
 
-The `genericcard` package contains the factories, builders and exceptions for the Generic Card API.
+The `genericcard` package contains every type defined by this specification.
 
 [[type_GenericCardApiProperties]]
 ==== GenericCardApiProperties
@@ -267,26 +252,21 @@ The `genericcard` package contains the factories, builders and exceptions for th
 |===
 | Kind     | Final class
 | Package  | `genericcard`
-| Since    | 1.0.0
 | Purpose  | Exposes the immutable properties of the {spec-name}.
 |===
 
 ===== Constants
 
-[cols="1,1,1,4", options="header"]
+[cols="1,1,4", options="header"]
 |===
-| Name    | Type     | Since  | Description
+| Name      | Type     | Description
 
-| `VERSION`
-| `string`
-| 1.0.0
-| String representation of the version of the API implemented by the conforming binding (e.g. `"1.0"`).
-  The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
+| `VERSION` | `string` | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
 |===
 
 [NOTE]
 ====
-The `GenericCardApiProperties` type SHALL NOT be instantiated. Implementations MUST prevent external construction.
+The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MUST prevent external construction.
 ====
 
 [[type_GenericCardApiFactory]]
@@ -296,7 +276,6 @@ The `GenericCardApiProperties` type SHALL NOT be instantiated. Implementations M
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
 | Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
 |===
 
@@ -309,7 +288,6 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=ends]
 |===
 | Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0.0
 | Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Returns     | A non-`null` <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Throws      | None.
@@ -318,7 +296,6 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=ends]
 |===
 | Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
-| Since       | 1.0.0
 | Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
 | Parameters
 | `reader` -- the reader through which the card communicates. +
@@ -334,7 +311,6 @@ guarantee that every invocation returns a fresh, fully initialised object.
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
 | Extends  | `CardSelectionExtension` ([CNA-TR-API])
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
 |===
@@ -344,7 +320,6 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=ends]
 |===
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
-| Since       | 1.0.0
 | Description
 | Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
 
@@ -361,77 +336,83 @@ guarantee that every invocation returns a fresh, fully initialised object.
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
-| Extends  | `CardTransactionManager<CardTransactionManager>` ([CNA-TR-API])
-| Purpose  | Provides the basic operations required to prepare and process APDU exchanges with a card.
+| Extends  | `IsoCardTransactionManager` ([CNA-TR-API])
+| Purpose
+| Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
+  card. The stereotype on `IsoCardTransactionManager` grants access to the multi-channel cast
+  `asMultichannelCardTransactionManager()` defined by [CNA-TR-API] when the underlying card supports
+  multi-channel.
 |===
+
+The `CardTransactionManager` uses a *prepare/process* model inherited from [CNA-TR-API]: the application prepares
+APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
+operation. Each prepared command MAY carry an optional *command identifier* (`idCommand`) supplied by the
+application, used to retrieve the corresponding response or to identify the failing command in case of error.
+Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used by the
+implementation to detect a relay attack at the individual-command level.
 
 ===== Operations
 
 [cols="1h,4", grid=rows, frame=ends]
 |===
-| Signature   | `prepareApdu(apduCommand: string) -> CardTransactionManager`
-| Since       | 1.0.0
-| Description | Prepares an APDU to be transmitted the next time `processCommands(channelControl)` is invoked. The command is supplied as a hexadecimal `string` containing a raw APDU.
-| Parameters  | `apduCommand` -- a non-empty hexadecimal `string` containing a raw APDU command.
+| Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
+| Description | Prepares an APDU command without command identifier nor duration bound.
+| Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
 | Returns     | The current instance, to allow fluent composition.
 | Throws      | None.
 |===
 
 [cols="1h,4", grid=rows, frame=ends]
 |===
-| Signature   | `prepareApdu(apduCommand: byte array) -> CardTransactionManager`
-| Since       | 1.0.0
-| Description | Prepares an APDU to be transmitted the next time `processCommands(channelControl)` is invoked. The command is supplied as a `byte array` containing the raw APDU.
-| Parameters  | `apduCommand` -- a non-empty `byte array` containing the raw APDU command.
-| Returns     | The current instance, to allow fluent composition.
-| Throws      | None.
-|===
-
-[cols="1h,4", grid=rows, frame=ends]
-|===
-| Signature
-| `prepareApdu(cla: byte, ins: byte, p1: byte, p2: byte, dataIn: byte array, le: byte) -> CardTransactionManager`
-| Since       | 1.0.0
-| Description | Prepares an APDU to be transmitted the next time `processCommands(channelControl)` is invoked. The command is supplied through its individual ISO/IEC 7816-4 header bytes, data and expected response length.
-| Parameters
-| `cla`    -- the class byte. +
-  `ins`    -- the instruction byte. +
-  `p1`     -- the P1 parameter byte. +
-  `p2`     -- the P2 parameter byte. +
-  `dataIn` -- the APDU data; `null` if there is no data. +
-  `le`     -- the expected output length; `0` if the output length is unspecified; `null` if no output data is expected.
-| Returns     | The current instance, to allow fluent composition.
-| Throws      | None.
-|===
-
-[cols="1h,4", grid=rows, frame=ends]
-|===
-| Signature   | `getResponsesAsByteArrays() -> list<byte array>`
-| Since       | 1.0.0
+| Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
 | Description
-| Returns the responses corresponding to the commands executed by the last call to `processCommands(channelControl)`,
-  represented as `byte array` values. Each element represents the response of one command, in the same order as the
+| Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
+  the corresponding response via <<op_getLastExecutionResponse,`getLastExecutionResponse`>>.
+| Parameters
+| `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
+  `idCommand`  -- the application-supplied identifier of this command.
+| Returns     | The current instance, to allow fluent composition.
+| Throws      | None.
+|===
+
+[cols="1h,4", grid=rows, frame=ends]
+|===
+| Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
+| Description
+| Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
+  implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
+  exception (the [CNA-TR-API] `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
+  of the offending command MUST be made available to the application through the exception message.
+| Parameters
+| `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
+  `idCommand`   -- the application-supplied identifier of this command. +
+  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
+| Returns     | The current instance, to allow fluent composition.
+| Throws      | None at preparation time. The duration check is performed at processing time.
+|===
+
+[cols="1h,4", grid=rows, frame=ends]
+|===
+| Signature   | `getLastExecutionResponses() -> list<byte array>`
+| Description
+| Returns the responses collected during the last invocation of `processCommands()`, in the order in which the
   commands were prepared.
 
   This operation MUST NOT alter the internal state of the manager: the list of responses MUST remain available
-  until `processCommands(channelControl)` is invoked again, at which point it is replaced by the new set of responses.
+  until `processCommands()` is invoked again, at which point it is replaced by the new set of responses.
 | Returns     | A non-`null` `list<byte array>` representing the command responses, in the order in which the commands were sent.
 | Throws      | None.
 |===
 
+[[op_getLastExecutionResponse]]
 [cols="1h,4", grid=rows, frame=ends]
 |===
-| Signature   | `getResponsesAsHexStrings() -> list<string>`
-| Since       | 1.0.0
+| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array`
 | Description
-| Returns the responses corresponding to the commands executed by the last call to `processCommands(channelControl)`,
-  represented as hexadecimal `string` values. Each element represents the response of one command, in the same order
-  as the commands were prepared.
-
-  This operation MUST NOT alter the internal state of the manager: the list of responses MUST remain available
-  until `processCommands(channelControl)` is invoked again, at which point it is replaced by the new set of responses.
-| Returns     | A non-`null` `list<string>` of hexadecimal strings representing the command responses, in the order in which the commands were sent.
+| Returns the response of the command identified by `idCommand`. If several prepared commands share the same
+  identifier, the response of the *last* matching command is returned.
+| Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
+| Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
 | Throws      | None.
 |===
 
@@ -441,13 +422,13 @@ guarantee that every invocation returns a fresh, fully initialised object.
 
 . The list of successful status words declared on a `GenericCardSelectionExtension` MUST be cumulative: every call
   to `addSuccessfulStatusWord` adds to the existing set without removing the implicit `9000h` entry.
-. The `prepareApdu` overloads MUST be functionally equivalent. The choice between hexadecimal `string`,
-  `byte array` and explicit header parameters is purely ergonomic for the calling application.
-. `processCommands(channelControl)` (inherited from [CNA-TR-API]) MUST execute the prepared APDUs in the order in
-  which they were prepared; the resulting `list` returned by `getResponsesAsByteArrays` and
-  `getResponsesAsHexStrings` MUST preserve that order.
-. The responses exposed by `getResponsesAsByteArrays` and `getResponsesAsHexStrings` MUST be derived from the
-  same underlying response set: invoking either operation MUST return data consistent with the other.
+. `processCommands()` (inherited from [CNA-TR-API]) MUST execute the prepared APDUs in the order in which they
+  were prepared; the resulting list returned by `getLastExecutionResponses` MUST preserve that order.
+. When `prepareCommand(apdu, idCommand, maxDuration)` is used, the implementation MUST measure the effective
+  duration of the APDU exchange and MUST raise an `InvalidCardResponseException` ([CNA-TR-API]) if the bound is
+  exceeded; the message MUST identify the offending command by its `idCommand`.
+. `getLastExecutionResponse(idCommand)` MUST be consistent with `getLastExecutionResponses()`: the byte array
+  returned for a given `idCommand` MUST equal the corresponding element of the ordered list (when present).
 
 // =============================================================================
 [appendix]
