@@ -253,7 +253,7 @@ The `genericcard` package contains every type defined by this specification.
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
+| Since    | 1.0
 | Extends  | `IsoCardTransactionManager` ([CNA-TR-API])
 | Purpose
 | Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
@@ -274,7 +274,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
-| Since       | 2.0.0
+| Since       | 2.0
 | Description | Prepares an APDU command without command identifier nor duration bound.
 | Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
 | Returns     | The current instance (`CardTransactionManager`), to allow fluent composition.
@@ -284,7 +284,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
-| Since       | 2.0.0
+| Since       | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
   the corresponding response via <<op_getLastExecutionResponse,`getLastExecutionResponse`>>.
@@ -298,7 +298,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
-| Since       | 2.0.0
+| Since       | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
   implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
@@ -315,7 +315,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `getLastExecutionResponses() -> list<byte array>`
-| Since       | 2.0.0
+| Since       | 2.0
 | Description
 | Returns the responses collected during the last invocation of `processCommands()`, in the order in which the
   commands were prepared.
@@ -330,7 +330,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array`
-| Since       | 2.0.0
+| Since       | 2.0
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
   identifier, the response of the *last* matching command is returned.
@@ -348,7 +348,7 @@ implementation to detect a relay attack at the individual-command level.
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
+| Since    | 1.0
 | Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
 |===
 
@@ -361,7 +361,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0.0
+| Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Returns     | A non-`null` <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Throws      | None.
@@ -370,7 +370,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
-| Since       | 1.0.0
+| Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
 | Parameters
 | `reader` -- the reader through which the card communicates. +
@@ -386,7 +386,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 |===
 | Kind     | Final class
 | Package  | `genericcard`
-| Since    | 1.0.0
+| Since    | 1.0
 | Purpose  | Exposes the immutable properties of the {spec-name}.
 |===
 
@@ -396,7 +396,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 |===
 | Name      | Type     | Since | Description
 
-| `VERSION` | `string` | 1.0.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
+| `VERSION` | `string` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
 |===
 
 [NOTE]
@@ -411,7 +411,7 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 |===
 | Kind     | Interface
 | Package  | `genericcard`
-| Since    | 1.0.0
+| Since    | 1.0
 | Extends  | `CardSelectionExtension` ([CNA-TR-API])
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
 |===
@@ -421,7 +421,7 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
-| Since       | 1.0.0
+| Since       | 1.0
 | Description
 | Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
 
