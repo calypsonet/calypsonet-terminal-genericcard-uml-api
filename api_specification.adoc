@@ -246,96 +246,6 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 
 The `genericcard` package contains every type defined by this specification.
 
-[[type_GenericCardApiProperties]]
-==== GenericCardApiProperties
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Kind     | Final class
-| Package  | `genericcard`
-| Since    | 1.0.0
-| Purpose  | Exposes the immutable properties of the {spec-name}.
-|===
-
-===== Constants
-
-[cols="1,1,1,4", options="header"]
-|===
-| Name      | Type     | Since | Description
-
-| `VERSION` | `string` | 1.0.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
-|===
-
-[NOTE]
-====
-The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MUST prevent external construction.
-====
-
-[[type_GenericCardApiFactory]]
-==== GenericCardApiFactory
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Kind     | Interface
-| Package  | `genericcard`
-| Since    | 1.0.0
-| Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
-|===
-
-The `GenericCardApiFactory` is the *only* normative entry point through which the application is allowed to
-instantiate the public types of the API. Implementations MUST expose exactly one instance of this factory and MUST
-guarantee that every invocation returns a fresh, fully initialised object.
-
-===== Operations
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0.0
-| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Returns     | A non-`null` <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Throws      | None.
-|===
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
-| Since       | 1.0.0
-| Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
-| Parameters
-| `reader` -- the reader through which the card communicates. +
-  `card`   -- the initial card data provided by the selection process.
-| Returns     | A non-`null` <<type_CardTransactionManager,`CardTransactionManager`>>.
-| Throws      | None.
-|===
-
-[[type_GenericCardSelectionExtension]]
-==== GenericCardSelectionExtension
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Kind     | Interface
-| Package  | `genericcard`
-| Since    | 1.0.0
-| Extends  | `CardSelectionExtension` ([CNA-TR-API])
-| Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
-|===
-
-===== Operations
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
-| Since       | 1.0.0
-| Description
-| Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
-
-  *Note:* the list initially contains the standard successful status word `9000h`.
-| Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
-| Returns     | The current instance, to allow fluent composition.
-| Throws      | None.
-|===
-
 [[type_CardTransactionManager]]
 ==== CardTransactionManager
 
@@ -431,6 +341,96 @@ implementation to detect a relay attack at the individual-command level.
 
 // =============================================================================
 [[sec_behaviours]]
+[[type_GenericCardApiFactory]]
+==== GenericCardApiFactory
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Kind     | Interface
+| Package  | `genericcard`
+| Since    | 1.0.0
+| Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
+|===
+
+The `GenericCardApiFactory` is the *only* normative entry point through which the application is allowed to
+instantiate the public types of the API. Implementations MUST expose exactly one instance of this factory and MUST
+guarantee that every invocation returns a fresh, fully initialised object.
+
+===== Operations
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
+| Since       | 1.0.0
+| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Returns     | A non-`null` <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Throws      | None.
+|===
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
+| Since       | 1.0.0
+| Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
+| Parameters
+| `reader` -- the reader through which the card communicates. +
+  `card`   -- the initial card data provided by the selection process.
+| Returns     | A non-`null` <<type_CardTransactionManager,`CardTransactionManager`>>.
+| Throws      | None.
+|===
+
+[[type_GenericCardApiProperties]]
+==== GenericCardApiProperties
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Kind     | Final class
+| Package  | `genericcard`
+| Since    | 1.0.0
+| Purpose  | Exposes the immutable properties of the {spec-name}.
+|===
+
+===== Constants
+
+[cols="1,1,1,4", options="header"]
+|===
+| Name      | Type     | Since | Description
+
+| `VERSION` | `string` | 1.0.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
+|===
+
+[NOTE]
+====
+The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MUST prevent external construction.
+====
+
+[[type_GenericCardSelectionExtension]]
+==== GenericCardSelectionExtension
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Kind     | Interface
+| Package  | `genericcard`
+| Since    | 1.0.0
+| Extends  | `CardSelectionExtension` ([CNA-TR-API])
+| Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
+|===
+
+===== Operations
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
+| Since       | 1.0.0
+| Description
+| Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
+
+  *Note:* the list initially contains the standard successful status word `9000h`.
+| Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
+| Returns     | The current instance, to allow fluent composition.
+| Throws      | None.
+|===
+
 == Behavioural Requirements
 
 . The list of successful status words declared on a `GenericCardSelectionExtension` MUST be cumulative: every call
