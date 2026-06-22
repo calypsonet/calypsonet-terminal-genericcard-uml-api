@@ -146,6 +146,15 @@ Each operation defined in this document is described by a table of the form:
 | Throws      | A list of exceptional conditions, each mapped to a specific exception type.
 |===
 
+==== Operation contracts
+
+To avoid repetition, the following rules apply to every operation table in <<sec_specification>> and are therefore
+not restated for each operation:
+
+* *Non-`null` results.* Unless the *Returns* row explicitly states that `null` may be returned, an operation
+  returns a non-`null` value.
+* *Fluent composition.* Builder-style operations return the current instance so that calls can be chained.
+
 === References
 
 [cols="1,1,4", options="header"]
@@ -242,7 +251,8 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 [[sec_specification]]
 == API Specification
 
-=== Package genericcard
+[[sec_pkg_genericcard]]
+=== Generic Card Service (`genericcard`)
 
 The `genericcard` package contains every type defined by this specification.
 
@@ -271,16 +281,18 @@ implementation to detect a relay attack at the individual-command level.
 
 ===== Operations
 
+[[op_CardTransactionManager_prepareCommand_apdu]]
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
 | Since       | 2.0
 | Description | Prepares an APDU command without command identifier nor duration bound.
 | Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
-| Returns     | The current instance (`CardTransactionManager`), to allow fluent composition.
+| Returns     | The current instance (`CardTransactionManager`).
 | Throws      | None.
 |===
 
+[[op_CardTransactionManager_prepareCommand_withId]]
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
@@ -291,10 +303,11 @@ implementation to detect a relay attack at the individual-command level.
 | Parameters
 | `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
-| Returns     | The current instance (`CardTransactionManager`), to allow fluent composition.
+| Returns     | The current instance (`CardTransactionManager`).
 | Throws      | None.
 |===
 
+[[op_CardTransactionManager_prepareCommand_withDuration]]
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
@@ -308,7 +321,7 @@ implementation to detect a relay attack at the individual-command level.
 | `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
-| Returns     | The current instance (`CardTransactionManager`), to allow fluent composition.
+| Returns     | The current instance (`CardTransactionManager`).
 | Throws      | None at preparation time. The duration check is performed at processing time.
 |===
 
@@ -322,7 +335,7 @@ implementation to detect a relay attack at the individual-command level.
 
   This operation MUST NOT alter the internal state of the manager: the list of responses MUST remain available
   until `processCommands()` is invoked again, at which point it is replaced by the new set of responses.
-| Returns     | A non-`null` `list<byte array>` representing the command responses, in the order in which the commands were sent.
+| Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent.
 | Throws      | None.
 |===
 
@@ -340,7 +353,6 @@ implementation to detect a relay attack at the individual-command level.
 |===
 
 // =============================================================================
-[[sec_behaviours]]
 [[type_GenericCardApiFactory]]
 ==== GenericCardApiFactory
 
@@ -363,10 +375,11 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
 | Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Returns     | A non-`null` <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Throws      | None.
 |===
 
+[[op_GenericCardApiFactory_createCardTransaction]]
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
@@ -375,7 +388,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Parameters
 | `reader` -- the reader through which the card communicates. +
   `card`   -- the initial card data provided by the selection process.
-| Returns     | A non-`null` <<type_CardTransactionManager,`CardTransactionManager`>>.
+| Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
 | Throws      | None.
 |===
 
@@ -418,6 +431,7 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 
 ===== Operations
 
+[[op_GenericCardSelectionExtension_addSuccessfulStatusWord]]
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
@@ -427,10 +441,11 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 
   *Note:* the list initially contains the standard successful status word `9000h`.
 | Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
-| Returns     | The current instance (`GenericCardSelectionExtension`), to allow fluent composition.
+| Returns     | The current instance (`GenericCardSelectionExtension`).
 | Throws      | None.
 |===
 
+[[sec_behaviours]]
 == Behavioural Requirements
 
 . The list of successful status words declared on a `GenericCardSelectionExtension` MUST be cumulative: every call
