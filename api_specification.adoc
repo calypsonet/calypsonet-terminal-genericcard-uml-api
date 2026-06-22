@@ -252,7 +252,7 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 == API Specification
 
 [[sec_pkg_genericcard]]
-=== Generic Card Service (`genericcard`)
+=== Namespace -- genericcard
 
 The `genericcard` package contains every type defined by this specification.
 
@@ -262,7 +262,7 @@ The `genericcard` package contains every type defined by this specification.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Kind     | Interface
-| Package  | `genericcard`
+| Namespace  | `genericcard`
 | Since    | 1.0
 | Extends  | `IsoCardTransactionManager` ([CNA-TR-API])
 | Purpose
@@ -359,7 +359,7 @@ implementation to detect a relay attack at the individual-command level.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Kind     | Interface
-| Package  | `genericcard`
+| Namespace  | `genericcard`
 | Since    | 1.0
 | Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
 |===
@@ -398,7 +398,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Kind     | Final class
-| Package  | `genericcard`
+| Namespace  | `genericcard`
 | Since    | 1.0
 | Purpose  | Exposes the immutable properties of the {spec-name}.
 |===
@@ -423,7 +423,7 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Kind     | Interface
-| Package  | `genericcard`
+| Namespace  | `genericcard`
 | Since    | 1.0
 | Extends  | `CardSelectionExtension` ([CNA-TR-API])
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
