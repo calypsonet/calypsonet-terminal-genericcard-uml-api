@@ -279,51 +279,22 @@ application, used to retrieve the corresponding response or to identify the fail
 Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used by the
 implementation to detect a relay attack at the individual-command level.
 
-===== Operations
+[[op_getLastExecutionResponse]]
+===== getLastExecutionResponse
 
-[[op_CardTransactionManager_prepareCommand_apdu]]
 [cols="1h,4", grid=rows, frame=all]
 |===
-| Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
+| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array`
 | Since       | 2.0
-| Description | Prepares an APDU command without command identifier nor duration bound.
-| Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
-| Returns     | The current instance (`CardTransactionManager`).
+| Description
+| Returns the response of the command identified by `idCommand`. If several prepared commands share the same
+  identifier, the response of the *last* matching command is returned.
+| Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
+| Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
 | Throws      | None.
 |===
 
-[[op_CardTransactionManager_prepareCommand_withId]]
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
-| Since       | 2.0
-| Description
-| Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
-  the corresponding response via <<op_getLastExecutionResponse,`getLastExecutionResponse`>>.
-| Parameters
-| `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
-  `idCommand`  -- the application-supplied identifier of this command.
-| Returns     | The current instance (`CardTransactionManager`).
-| Throws      | None.
-|===
-
-[[op_CardTransactionManager_prepareCommand_withDuration]]
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
-| Since       | 2.0
-| Description
-| Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
-  implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
-  exception (the [CNA-TR-API] `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
-  of the offending command MUST be made available to the application through the exception message.
-| Parameters
-| `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
-  `idCommand`   -- the application-supplied identifier of this command. +
-  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
-| Returns     | The current instance (`CardTransactionManager`).
-| Throws      | None at preparation time. The duration check is performed at processing time.
-|===
+===== getLastExecutionResponses
 
 [cols="1h,4", grid=rows, frame=all]
 |===
@@ -339,17 +310,54 @@ implementation to detect a relay attack at the individual-command level.
 | Throws      | None.
 |===
 
-[[op_getLastExecutionResponse]]
+[[op_CardTransactionManager_prepareCommand_apdu]]
+===== prepareCommand
+
 [cols="1h,4", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array`
+| Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
+| Since       | 2.0
+| Description | Prepares an APDU command without command identifier nor duration bound.
+| Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
+| Returns     | The current instance (`CardTransactionManager`).
+| Throws      | None.
+|===
+
+[[op_CardTransactionManager_prepareCommand_withId]]
+===== prepareCommand
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
 | Since       | 2.0
 | Description
-| Returns the response of the command identified by `idCommand`. If several prepared commands share the same
-  identifier, the response of the *last* matching command is returned.
-| Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
-| Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
+| Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
+  the corresponding response via <<op_getLastExecutionResponse,`getLastExecutionResponse`>>.
+| Parameters
+| `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
+  `idCommand`  -- the application-supplied identifier of this command.
+| Returns     | The current instance (`CardTransactionManager`).
 | Throws      | None.
+|===
+
+[[op_CardTransactionManager_prepareCommand_withDuration]]
+===== prepareCommand
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
+| Since       | 2.0
+| Description
+| Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
+  implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
+  exception (the [CNA-TR-API] `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
+  of the offending command MUST be made available to the application through the exception message.
+| Parameters
+| `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
+  `idCommand`   -- the application-supplied identifier of this command. +
+  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
+| Returns     | The current instance (`CardTransactionManager`).
+| Throws      | None at preparation time. The duration check is performed at processing time.
 |===
 
 // =============================================================================
@@ -368,18 +376,9 @@ The `GenericCardApiFactory` is the *only* normative entry point through which th
 instantiate the public types of the API. Implementations MUST expose exactly one instance of this factory and MUST
 guarantee that every invocation returns a fresh, fully initialised object.
 
-===== Operations
-
-[cols="1h,4", grid=rows, frame=all]
-|===
-| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0
-| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Throws      | None.
-|===
-
 [[op_GenericCardApiFactory_createCardTransaction]]
+===== createCardTransaction
+
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
@@ -389,6 +388,17 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | `reader` -- the reader through which the card communicates. +
   `card`   -- the initial card data provided by the selection process.
 | Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
+| Throws      | None.
+|===
+
+===== createGenericCardSelectionExtension
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
+| Since       | 1.0
+| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Throws      | None.
 |===
 
@@ -429,9 +439,9 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
 |===
 
-===== Operations
-
 [[op_GenericCardSelectionExtension_addSuccessfulStatusWord]]
+===== addSuccessfulStatusWord
+
 [cols="1h,4", grid=rows, frame=all]
 |===
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
