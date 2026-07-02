@@ -283,7 +283,7 @@ The `genericcard` package contains every type defined by this specification.
 The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MUST prevent external construction.
 ====
 
-=== Interfaces
+=== API Interfaces
 
 [[type_CardTransactionManager]]
 ==== Card Transaction Manager
