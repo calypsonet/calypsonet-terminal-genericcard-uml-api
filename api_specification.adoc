@@ -65,7 +65,7 @@ which each member was introduced.
 
 The {spec-name} defines the contract used by terminal applications that need to exchange raw APDUs with an ISO/IEC
 7816-4-compliant card without relying on a card-specific application layer (e.g. Calypso). It complements the
-*Terminal Reader API* ([CNA-TR-API]) by providing:
+*Terminal Reader API* (<<ref_cna_tr,CNA-TR-API>>) by providing:
 
 * a card-selection extension that allows additional successful status words to be declared for the *Select
   Application* APDU,
@@ -73,7 +73,7 @@ The {spec-name} defines the contract used by terminal applications that need to 
   optional per-command duration bound (relay-attack countermeasure), and processes them as a single batch,
   returning the raw responses to the application.
 
-Conforming implementations MUST guarantee interoperability with reader implementations of the [CNA-TR-API]
+Conforming implementations MUST guarantee interoperability with reader implementations of the <<ref_cna_tr,CNA-TR-API>>
 specification.
 
 === Scope
@@ -310,15 +310,15 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 | Kind     | Interface
 | Namespace  | `genericcard`
 | Since    | 1.0
-| Extends  | `IsoCardTransactionManager` ([CNA-TR-API])
+| Extends  | `IsoCardTransactionManager` (<<ref_cna_tr,CNA-TR-API>>)
 | Purpose
 | Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
   card. The stereotype on `IsoCardTransactionManager` grants access to the multi-channel cast
-  `asMultichannelCardTransactionManager()` defined by [CNA-TR-API] when the underlying card supports
+  `asMultichannelCardTransactionManager()` defined by <<ref_cna_tr,CNA-TR-API>> when the underlying card supports
   multi-channel.
 |===
 
-The `CardTransactionManager` uses a *prepare/process* model inherited from [CNA-TR-API]: the application prepares
+The `CardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
 APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
 operation. Each prepared command MAY carry an optional *command identifier* (`idCommand`) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
@@ -396,7 +396,7 @@ implementation to detect a relay attack at the individual-command level.
 | Description
 | Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
   implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
-  exception (the [CNA-TR-API] `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
+  exception (the <<ref_cna_tr,CNA-TR-API>> `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
   of the offending command MUST be made available to the application through the exception message.
 | Parameters
 | `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
@@ -455,7 +455,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Kind     | Interface
 | Namespace  | `genericcard`
 | Since    | 1.0
-| Extends  | `CardSelectionExtension` ([CNA-TR-API])
+| Extends  | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
 |===
 
@@ -480,10 +480,10 @@ guarantee that every invocation returns a fresh, fully initialised object.
 
 . The list of successful status words declared on a `GenericCardSelectionExtension` MUST be cumulative: every call
   to `addSuccessfulStatusWord` adds to the existing set without removing the implicit `9000h` entry.
-. `processCommands()` (inherited from [CNA-TR-API]) MUST execute the prepared APDUs in the order in which they
+. `processCommands()` (inherited from <<ref_cna_tr,CNA-TR-API>>) MUST execute the prepared APDUs in the order in which they
   were prepared; the resulting list returned by `getLastExecutionResponses` MUST preserve that order.
 . When `prepareCommand(apdu, idCommand, maxDuration)` is used, the implementation MUST measure the effective
-  duration of the APDU exchange and MUST raise an `InvalidCardResponseException` ([CNA-TR-API]) if the bound is
+  duration of the APDU exchange and MUST raise an `InvalidCardResponseException` (<<ref_cna_tr,CNA-TR-API>>) if the bound is
   exceeded; the message MUST identify the offending command by its `idCommand`.
 . `getLastExecutionResponse(idCommand)` MUST be consistent with `getLastExecutionResponses()`: the byte array
   returned for a given `idCommand` MUST equal the corresponding element of the ordered list (when present).
