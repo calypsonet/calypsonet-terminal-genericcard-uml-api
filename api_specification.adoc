@@ -266,6 +266,8 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 [[sec_specification]]
 == API Specification
 
+Stateful operations are subject to the ordering and lifecycle constraints defined in <<sec_behaviours>>.
+
 The API is organized into the following packages:
 
 [[sec_pkg_genericcard]]
