@@ -320,7 +320,7 @@ implementation to detect a relay attack at the individual-command level.
 
 [cols="1h,4", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array`
+| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array?`
 | Since       | 2.0
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
