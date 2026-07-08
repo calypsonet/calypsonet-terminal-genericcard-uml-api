@@ -89,7 +89,7 @@ This specification covers:
 The following topics are *out of scope*:
 
 * the parsing of APDU payloads -- the API exposes raw bytes only,
-* the application-level dialogue with specific card products (covered by dedicated specifications),
+* the application-level dialog with specific card products (covered by dedicated specifications),
 * the management of secure channels.
 
 === Conformance
