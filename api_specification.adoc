@@ -40,7 +40,7 @@ It defines, in a language-agnostic way, the interfaces, classes, enumerations, e
 relationships and behavioural requirements that any conforming implementation of the {spec-name} MUST satisfy.
 
 The {spec-name} is part of the broader CNA *Terminal API* family. It exposes the minimal contract required to
-exchange raw APDUs with an ISO/IEC 7816-4 card that has been selected through the *Terminal Reader API*, without
+exchange raw APDUs with an <<ref_iso7816,ISO/IEC 7816-4>> card that has been selected through the *Terminal Reader API*, without
 prescribing any specific card application model.
 
 [discrete]
@@ -183,8 +183,8 @@ is backward-compatible per that API's evolution policy.
 | [[ref_rfc8174]] [RFC 8174]
 | https://www.rfc-editor.org/rfc/rfc8174[_Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words_], B. Leiba, May 2017.
 
-| [[ref_iso7816_4]] [ISO/IEC 7816-4]
-| https://www.iso.org[_Identification cards -- Integrated circuit cards -- Part 4: Organization, security and commands for interchange_].
+| [[ref_iso7816]] [ISO/IEC 7816]
+| https://www.iso.org[_Identification cards -- Integrated circuit cards_].
 
 | [[ref_cna_tr]] [CNA-TR-API]
 | https://docs.terminal-api.calypsonet.org/calypsonet-terminal-reader-uml-api/[_Terminal Reader API Specification_], version {ver-cna-tr}, {organization}.
