@@ -133,6 +133,20 @@ equivalent native type. Implementations MUST preserve the semantic intent rather
 | `void`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`.
 |===
 
+==== Type tables
+
+Each interface, class, enumeration and exception defined in this document is described by a table of the form:
+
+[cols="1h,4", grid=rows, frame=all]
+|===
+| Kind       | The category of the type (interface, class, enumeration, exception, etc.).
+| Namespace  | The package in which the type is defined.
+| Extends    | The type extended by this type, when applicable.
+| Implements | The interface implemented by this type, when applicable.
+| Since      | The version of the API in which the type was introduced.
+| Purpose    | A normative description of the type's responsibility.
+|===
+
 ==== Operation tables
 
 Each operation defined in this document is described by a table of the form:
@@ -211,7 +225,7 @@ is backward-compatible per that API's evolution policy.
 |===
 | Term              | Definition
 
-| APDU              | Application Protocol Data Unit, the message format used between the terminal and the card.
+| APDU              | Application Protocol Data Unit, the message format used between the terminal and the card, as defined in ISO/IEC 7816-3.
 | Card Reader       | Hardware or software component capable of detecting cards and exchanging data with them.
 | Command Identifier| Application-supplied integer attached to a prepared APDU, used to retrieve the corresponding response or to identify the failing command in case of error.
 | Relay Attack      | Software-level attack consisting in interposing a relay between the card and the terminal to redirect APDU exchanges to a distant card.
@@ -322,8 +336,8 @@ The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MU
 |===
 | Kind     | Interface
 | Namespace  | `genericcard`
-| Since    | 1.0
 | Extends  | `IsoCardTransactionManager` (<<ref_cna_tr,CNA-TR-API>>)
+| Since    | 1.0
 | Purpose
 | Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
   card. The stereotype on `IsoCardTransactionManager` grants access to the multi-channel cast
@@ -467,8 +481,8 @@ guarantee that every invocation returns a fresh, fully initialised object.
 |===
 | Kind     | Interface
 | Namespace  | `genericcard`
-| Since    | 1.0
 | Extends  | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
+| Since    | 1.0
 | Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
 |===
 
