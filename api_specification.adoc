@@ -392,7 +392,7 @@ implementation to detect a relay attack at the individual-command level.
 | Since       | 2.0
 | Description | Prepares an APDU command without command identifier nor duration bound.
 | Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
-| Returns     | The current instance (`CardTransactionManager`).
+| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Throws      | None.
 |===
 
@@ -409,7 +409,7 @@ implementation to detect a relay attack at the individual-command level.
 | Parameters
 | `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
-| Returns     | The current instance (`CardTransactionManager`).
+| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Throws      | None.
 |===
 
@@ -429,7 +429,7 @@ implementation to detect a relay attack at the individual-command level.
 | `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
-| Returns     | The current instance (`CardTransactionManager`).
+| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Throws      | None at preparation time. The duration check is performed at processing time.
 |===
 
@@ -457,8 +457,8 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
 | Parameters
-| `reader` -- the reader through which the card communicates. +
-  `card`   -- the initial card data provided by the selection process.
+| `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card communicates. +
+  `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
 | Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
 | Throws      | None.
 |===
@@ -498,7 +498,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 
   *Note:* the list initially contains the standard successful status word `9000h`.
 | Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
-| Returns     | The current instance (`GenericCardSelectionExtension`).
+| Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
 | Throws      | None.
 |===
 
