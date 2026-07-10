@@ -98,7 +98,7 @@ A software product conforms to this specification if and only if:
 
 . it implements every interface and class defined in <<sec_specification>> with the operations and semantics
   prescribed in this document,
-. it preserves the structural and behavioural relationships described in <<sec_architecture>> and <<sec_behaviours>>.
+. it preserves the structural relationships described in <<sec_architecture>>.
 
 Throughout this specification, the key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**,
 **MAY** and **OPTIONAL** are to be interpreted as described in <<ref_rfc2119,RFC 2119>> and <<ref_rfc8174,RFC 8174>> when, and only when,
@@ -291,8 +291,6 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 [[sec_specification]]
 == API Specification
 
-Stateful operations are subject to the ordering and lifecycle constraints defined in <<sec_behaviours>>.
-
 === Classes
 
 [[type_GenericCardApiProperties]]
@@ -354,7 +352,8 @@ implementation to detect a relay attack at the individual-command level.
 | Since       | 2.0
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
-  identifier, the response of the *last* matching command is returned.
+  identifier, the response of the *last* matching command is returned. The value returned for a given identifier
+  MUST equal the corresponding element of `getLastExecutionResponses`.
 | Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
 | Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
 | Throws      | None.
@@ -494,14 +493,6 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
 | Throws      | None.
 |===
-
-[[sec_behaviours]]
-== Behavioural Requirements
-
-. `processCommands()` (inherited from <<ref_cna_tr,CNA-TR-API>>) MUST execute the prepared APDUs in the order in which they
-  were prepared; the resulting list returned by `getLastExecutionResponses` MUST preserve that order.
-. `getLastExecutionResponse(idCommand)` MUST be consistent with `getLastExecutionResponses()`: the byte array
-  returned for a given `idCommand` MUST equal the corresponding element of the ordered list (when present).
 
 // =============================================================================
 [appendix]
