@@ -267,13 +267,11 @@ GC  ..> TR : depends on
 @enduml
 ....
 
-=== Logical packages
-
-The specification is organised in a single logical package:
+=== Logical namespaces
 
 [cols="1,1,4", options="header"]
 |===
-| Package        | Role     | Summary
+| Namespace        | Role     | Summary
 
 | `genericcard`  | Public API
 | Factory, selection extension and transaction manager. Properties.
