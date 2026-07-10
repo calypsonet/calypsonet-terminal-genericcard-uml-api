@@ -457,7 +457,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
 | Parameters
-| `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card communicates. +
+| `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card is reached. +
   `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
 | Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
 | Throws      | None.
