@@ -258,7 +258,7 @@ skinparam roundCorner 8
 skinparam ArrowColor #2C3E50
 
 component "Terminal Application" as App
-component "Generic Card API\n(this specification)" as GC
+component "Generic Card API\n(this specification)" as GC #LightYellow
 component "Terminal Reader API\n[CNA-TR-API]" as TR
 
 App --> GC : uses
