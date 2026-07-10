@@ -489,7 +489,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Description
 | Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
 
-  *Note:* the list initially contains the standard successful status word `9000h`.
+  *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
 | Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
 | Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
 | Throws      | None.
@@ -498,13 +498,8 @@ guarantee that every invocation returns a fresh, fully initialised object.
 [[sec_behaviours]]
 == Behavioural Requirements
 
-. The list of successful status words declared on a `GenericCardSelectionExtension` MUST be cumulative: every call
-  to `addSuccessfulStatusWord` adds to the existing set without removing the implicit `9000h` entry.
 . `processCommands()` (inherited from <<ref_cna_tr,CNA-TR-API>>) MUST execute the prepared APDUs in the order in which they
   were prepared; the resulting list returned by `getLastExecutionResponses` MUST preserve that order.
-. When `prepareCommand(apdu, idCommand, maxDuration)` is used, the implementation MUST measure the effective
-  duration of the APDU exchange and MUST raise an `InvalidCardResponseException` (<<ref_cna_tr,CNA-TR-API>>) if the bound is
-  exceeded; the message MUST identify the offending command by its `idCommand`.
 . `getLastExecutionResponse(idCommand)` MUST be consistent with `getLastExecutionResponses()`: the byte array
   returned for a given `idCommand` MUST equal the corresponding element of the ordered list (when present).
 
