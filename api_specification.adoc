@@ -310,12 +310,12 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 |===
 | Name      | Type     | Since | Description
 
-| `VERSION` | `string` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value MUST be a dotted decimal of the form `MAJOR.MINOR`.
+| `VERSION` | `string` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value is a dotted decimal of the form `MAJOR.MINOR`.
 |===
 
 [NOTE]
 ====
-The `GenericCardApiProperties` type MUST NOT be instantiated. Implementations MUST prevent external construction.
+The `GenericCardApiProperties` type cannot be instantiated; it exposes only static properties.
 ====
 
 === API Interfaces
@@ -340,8 +340,8 @@ The `CardTransactionManager` uses a *prepare/process* model inherited from <<ref
 APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
 operation. Each prepared command MAY carry an optional *command identifier* (`idCommand`) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
-Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used by the
-implementation to detect a relay attack at the individual-command level.
+Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
+detect a relay attack at the individual-command level.
 
 [[op_getLastExecutionResponse]]
 ===== Get Last Execution Response
@@ -353,7 +353,7 @@ implementation to detect a relay attack at the individual-command level.
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
   identifier, the response of the *last* matching command is returned. The value returned for a given identifier
-  MUST equal the corresponding element of `getLastExecutionResponses`.
+  is the same as the corresponding element of `getLastExecutionResponses`.
 | Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
 | Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
 | Throws      | None.
@@ -369,7 +369,7 @@ implementation to detect a relay attack at the individual-command level.
 | Returns the responses collected during the last invocation of `processCommands()`, in the order in which the
   commands were prepared.
 
-  This operation MUST NOT alter the internal state of the manager: the list of responses MUST remain available
+  This operation does not alter the internal state of the manager: the list of responses remains available
   until `processCommands()` is invoked again, at which point it is replaced by the new set of responses.
 | Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent.
 | Throws      | None.
@@ -414,9 +414,9 @@ implementation to detect a relay attack at the individual-command level.
 | Since       | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
-  implementation MUST measure the effective duration of the corresponding APDU exchange and MUST raise an
-  exception (the <<ref_cna_tr,CNA-TR-API>> `InvalidCardResponseException`) if it exceeds the declared bound. The identifier
-  of the offending command MUST be made available to the application through the exception message.
+  effective duration of the corresponding APDU exchange is measured, and an `InvalidCardResponseException`
+  (<<ref_cna_tr,CNA-TR-API>>) is raised if it exceeds the declared bound; the exception message identifies the
+  offending command.
 | Parameters
 | `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`   -- the application-supplied identifier of this command. +
@@ -436,9 +436,8 @@ implementation to detect a relay attack at the individual-command level.
 | Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
 |===
 
-The `GenericCardApiFactory` is the *only* normative entry point through which the application is allowed to
-instantiate the public types of the API. Implementations MUST expose exactly one instance of this factory and MUST
-guarantee that every invocation returns a fresh, fully initialised object.
+The `GenericCardApiFactory` is the single entry point through which the application instantiates the public types
+of the API. It is provided as a single instance whose accessors each return a fresh, fully initialised object.
 
 [[op_GenericCardApiFactory_createCardTransaction]]
 ===== Create Card Transaction
@@ -486,7 +485,7 @@ guarantee that every invocation returns a fresh, fully initialised object.
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
 | Since       | 1.0
 | Description
-| Adds a status word to the list of those that MUST be considered successful for the *Select Application* APDU.
+| Adds a status word to the list of those considered successful for the *Select Application* APDU.
 
   *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
 | Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
