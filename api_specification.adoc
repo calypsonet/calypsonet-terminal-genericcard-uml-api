@@ -366,11 +366,11 @@ detect a relay attack at the individual-command level.
 | Signature   | `getLastExecutionResponses() -> list<byte array>`
 | Since       | 2.0
 | Description
-| Returns the responses collected during the last invocation of `processCommands()`, in the order in which the
+| Returns the responses collected during the last call to `processCommands()`, in the order in which the
   commands were prepared.
 
   This operation does not alter the internal state of the manager: the list of responses remains available
-  until `processCommands()` is invoked again, at which point it is replaced by the new set of responses.
+  until `processCommands()` is called again, at which point it is replaced by the new set of responses.
 | Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent.
 | Throws      | None.
 |===
