@@ -139,6 +139,7 @@ Each interface, class, enumeration and exception defined in this document is des
 
 [cols="1h,4", grid=rows, frame=all]
 |===
+| Name       | The type's normalized name.
 | Kind       | The category of the type (interface, class, enumeration, exception, etc.).
 | Namespace  | The namespace in which the type is defined.
 | Extends    | The type extended by this type, when applicable.
@@ -298,6 +299,7 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 
 [cols="1h,4", grid=rows, frame=all]
 |===
+| Name     | `GenericCardApiProperties`
 | Kind     | Final class
 | Namespace  | `genericcard`
 | Since    | 1.0
@@ -325,6 +327,7 @@ The `GenericCardApiProperties` type cannot be instantiated; it exposes only stat
 
 [cols="1h,4", grid=rows, frame=all]
 |===
+| Name     | `CardTransactionManager`
 | Kind     | Interface
 | Namespace  | `genericcard`
 | Extends  | `IsoCardTransactionManager` (<<ref_cna_tr,CNA-TR-API>>)
@@ -430,6 +433,7 @@ detect a relay attack at the individual-command level.
 
 [cols="1h,4", grid=rows, frame=all]
 |===
+| Name     | `GenericCardApiFactory`
 | Kind     | Interface
 | Namespace  | `genericcard`
 | Since    | 1.0
@@ -470,6 +474,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="1h,4", grid=rows, frame=all]
 |===
+| Name     | `GenericCardSelectionExtension`
 | Kind     | Interface
 | Namespace  | `genericcard`
 | Extends  | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
