@@ -346,7 +346,7 @@ application, used to retrieve the corresponding response or to identify the fail
 Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
 detect a relay attack at the individual-command level.
 
-[[op_getLastExecutionResponse]]
+[[op_CardTransactionManager_getLastExecutionResponse]]
 ===== Get Last Execution Response
 
 [cols="1h,4", grid=rows, frame=all]
@@ -362,6 +362,7 @@ detect a relay attack at the individual-command level.
 | Throws      | None.
 |===
 
+[[op_CardTransactionManager_getLastExecutionResponses]]
 ===== Get Last Execution Responses
 
 [cols="1h,4", grid=rows, frame=all]
@@ -400,7 +401,7 @@ detect a relay attack at the individual-command level.
 | Since       | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
-  the corresponding response via <<op_getLastExecutionResponse,`getLastExecutionResponse`>>.
+  the corresponding response via <<op_CardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
 | Parameters
 | `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
@@ -458,6 +459,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 | Throws      | None.
 |===
 
+[[op_GenericCardApiFactory_createGenericCardSelectionExtension]]
 ===== Create Generic Card Selection Extension
 
 [cols="1h,4", grid=rows, frame=all]
