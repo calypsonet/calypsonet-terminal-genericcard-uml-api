@@ -336,7 +336,7 @@ The `GenericCardApiProperties` type cannot be instantiated; it exposes only stat
 | Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
   card. The stereotype on `IsoCardTransactionManager` grants access to the multi-channel cast
   `asMultichannelCardTransactionManager()` defined by <<ref_cna_tr,CNA-TR-API>> when the underlying card supports
-  multi-channel.
+  multi-channel. An instance is obtained via <<op_GenericCardApiFactory_createCardTransaction,`GenericCardApiFactory.createCardTransaction`>>.
 |===
 
 The `CardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
@@ -481,7 +481,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 | Namespace  | `genericcard`
 | Extends  | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
 | Since    | 1.0
-| Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU.
+| Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU. An instance is obtained via <<op_GenericCardApiFactory_createGenericCardSelectionExtension,`GenericCardApiFactory.createGenericCardSelectionExtension`>>.
 |===
 
 [[op_GenericCardSelectionExtension_addSuccessfulStatusWord]]
