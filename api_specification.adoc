@@ -358,7 +358,7 @@ detect a relay attack at the individual-command level.
   identifier, the response of the *last* matching command is returned. The value returned for a given identifier
   is the same as the corresponding element of `getLastExecutionResponses`.
 | Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
-| Returns     | The response bytes, or `null` if no command with the supplied identifier produced a response.
+| Returns     | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
 | Throws      | None.
 |===
 
@@ -375,7 +375,7 @@ detect a relay attack at the individual-command level.
 
   This operation does not alter the internal state of the manager: the list of responses remains available
   until `processCommands()` is called again, at which point it is replaced by the new set of responses.
-| Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent.
+| Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
 | Throws      | None.
 |===
 
