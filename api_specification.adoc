@@ -165,7 +165,7 @@ equivalent native type. Implementations MUST preserve the semantic intent rather
 
 Each interface, class, enumeration and exception defined in this document is described by a table of the form:
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name       | The type's normalized name.
 | Kind       | The category of the type (interface, class, enumeration, exception, etc.).
@@ -185,7 +185,7 @@ notes, value tables or examples -- is placed as prose below the table.
 
 Each operation defined in this document is described by a table of the form:
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | The operation's language-agnostic signature.
 | Since       | The version of the API in which the operation was introduced.
@@ -338,7 +338,7 @@ include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=c
 [[type_GenericCardApiProperties]]
 ==== Generic Card API Properties
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name     | `GenericCardApiProperties`
 | Kind     | Final class
@@ -366,7 +366,7 @@ The `GenericCardApiProperties` type cannot be instantiated; it exposes only stat
 [[type_CardTransactionManager]]
 ==== Card Transaction Manager
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name     | `CardTransactionManager`
 | Kind     | Interface
@@ -390,7 +390,7 @@ detect a relay attack at the individual-command level.
 [[op_CardTransactionManager_getLastExecutionResponse]]
 ===== Get Last Execution Response
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array?`
 | Since       | 2.0
@@ -406,7 +406,7 @@ detect a relay attack at the individual-command level.
 [[op_CardTransactionManager_getLastExecutionResponses]]
 ===== Get Last Execution Responses
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `getLastExecutionResponses() -> list<byte array>`
 | Since       | 2.0
@@ -423,7 +423,7 @@ detect a relay attack at the individual-command level.
 [[op_CardTransactionManager_prepareCommand_apdu]]
 ===== Prepare Command (APDU)
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
 | Since       | 2.0
@@ -436,7 +436,7 @@ detect a relay attack at the individual-command level.
 [[op_CardTransactionManager_prepareCommand_withId]]
 ===== Prepare Command (APDU, ID Command)
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager`
 | Since       | 2.0
@@ -453,7 +453,7 @@ detect a relay attack at the individual-command level.
 [[op_CardTransactionManager_prepareCommand_withDuration]]
 ===== Prepare Command (APDU, ID Command, Max Duration)
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager`
 | Since       | 2.0
@@ -473,7 +473,7 @@ detect a relay attack at the individual-command level.
 [[type_GenericCardApiFactory]]
 ==== Generic Card API Factory
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name     | `GenericCardApiFactory`
 | Kind     | Interface
@@ -488,7 +488,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 [[op_GenericCardApiFactory_createCardTransaction]]
 ===== Create Card Transaction
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `createCardTransaction(reader: CardReader, card: SmartCard) -> CardTransactionManager`
 | Since       | 1.0
@@ -503,7 +503,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 [[op_GenericCardApiFactory_createGenericCardSelectionExtension]]
 ===== Create Generic Card Selection Extension
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
 | Since       | 1.0
@@ -515,7 +515,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 [[type_GenericCardSelectionExtension]]
 ==== Generic Card Selection Extension
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name     | `GenericCardSelectionExtension`
 | Kind     | Interface
@@ -528,7 +528,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 [[op_GenericCardSelectionExtension_addSuccessfulStatusWord]]
 ===== Add Successful Status Word
 
-[cols="1h,4", grid=rows, frame=all]
+[cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
 | Since       | 1.0
