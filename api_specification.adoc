@@ -311,7 +311,7 @@ GC  ..> TR : depends on
 
 === Logical namespaces
 
-[cols="1,1,4", options="header"]
+[cols=".^2,^.^1,.^6", options="header"]
 |===
 | Namespace        | Role     | Summary
 
