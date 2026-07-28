@@ -11,6 +11,7 @@
 :doc-classification: Public
 :doc-id: CNA-TGC-API
 :doc-ref: YYMMDD-SP-CNATerminalAPI-GenericCard
+:doc-repo: https://github.com/calypsonet/calypsonet-terminal-genericcard-uml-api
 //
 // Revision (bumped every edition)
 :revnumber: 2.0.0-SNAPSHOT
@@ -97,6 +98,7 @@ prescribing any specific card application model.
 | Version             | {revnumber}
 | Revision date       | {revdate}
 | Editor              | {organization}
+| Source repository   | {doc-repo}
 | Reference license   | Eclipse Public License -- v 2.0 (EPL-2.0)
 |===
 
