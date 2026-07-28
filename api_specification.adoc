@@ -470,8 +470,8 @@ detect a relay attack at the individual-command level.
 |===
 | Signature
 | `prepareCommand(` +
-`{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}idCommand: integer` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer` +
 `) -> CardTransactionManager`
 | Since       | 2.0
 | Description
@@ -491,9 +491,9 @@ detect a relay attack at the individual-command level.
 |===
 | Signature
 | `prepareCommand(` +
-`{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}idCommand: integer,` +
-`{nbsp}{nbsp}maxDuration: long` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: long` +
 `) -> CardTransactionManager`
 | Since       | 2.0
 | Description
@@ -531,8 +531,8 @@ of the API. It is provided as a single instance whose accessors each return a fr
 |===
 | Signature
 | `createCardTransaction(` +
-`{nbsp}{nbsp}reader: CardReader,` +
-`{nbsp}{nbsp}card: SmartCard` +
+`{nbsp}{nbsp}{nbsp}{nbsp}reader: CardReader,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}card: SmartCard` +
 `) -> CardTransactionManager`
 | Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
