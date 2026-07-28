@@ -336,21 +336,9 @@ is backward-compatible per that API's evolution policy.
 === Functional positioning
 
 [plantuml, target=architecture-overview, format=svg]
-....
-@startuml
-skinparam shadowing false
-skinparam roundCorner 8
-skinparam ArrowColor #2C3E50
-
-component "Terminal Application" as App
-component "Generic Card API\n(this specification)" as GC #LightYellow
-component "Terminal Reader API\n[CNA-TR-API]" as TR
-
-App --> GC : uses
-App --> TR : uses
-GC  ..> TR : depends on
-@enduml
-....
+----
+include::uml/architecture-overview.puml[]
+----
 
 === Logical namespaces
 
@@ -367,9 +355,9 @@ GC  ..> TR : depends on
 
 The following UML class diagram provides a visual representation of the types and relationships defined by this specification:
 
-[plantuml, target="api_class_diagram", format="svg"]
+[plantuml, target="class-diagram", format="svg"]
 ----
-include::api_class_diagram.puml[Terminal Generic Card API class diagram, align=center]
+include::uml/class-diagram.puml[Terminal Generic Card API class diagram, align=center]
 ----
 
 // =============================================================================
