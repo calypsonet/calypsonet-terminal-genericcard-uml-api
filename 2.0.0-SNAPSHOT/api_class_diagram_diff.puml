@@ -1,8 +1,9 @@
 @startuml
 title
-    <img:../assets/logo.svg{scale=0.2}>
+    <img:../assets/logos/calypso.svg{scale=0.2}>
 
-    Terminal Generic Card API - 1.0.0 (2026-03-03)
+    Terminal Generic Card API - 2.0.+ (2026-06-12)
+    DIFF with 1.0
 end title
 
 ' == THEME ==
@@ -47,9 +48,18 @@ hide <<grey>> stereotype
 ' == CONTENT ==
 
 legend top
-    __Colors legend__ :
-    * __External API references__ :
-    ** <back:yellow>**keypop-reader-java-api**</back>
+    * __External public API references__
+    *** <back:yellow>**Calypsonet Terminal Reader API**</back>
+    * __Text__
+    *** <color:blue><b>New element added since the last version
+    *** <color:red><s><b>Element marked as deprecated since the last version
+    *** <s><b>Element marked as deprecated
+    *** <color:grey><b>Work in progress...
+    * __Object__
+    *** <back:#EBF5FB><color:#3498DB><b>Factory or interface provided by the factory
+    *** <back:#FEFECE><color:#D4AC0D><b>Interface that cannot be instantiated directly by the factory
+    *** <back:#FDEDEC><color:#E74C3C><b>SPI (Service Provider Interface) to be provided by the end-user
+    *** <back:#E9F7EF><color:#27AE60><b>Class, enum or exception
 end legend
 
 package "terminal.genericcard" as root {
@@ -66,13 +76,20 @@ package "terminal.genericcard" as root {
         +GenericCardSelectionExtension addSuccessfulStatusWord (int statusWord)
     }
 
-    +interface "<<<back:yellow>CardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
-        +CardTransactionManager prepareApdu (String apduCommand)
-        +CardTransactionManager prepareApdu (byte[] apduCommand)
-        +CardTransactionManager prepareApdu (byte cla, byte ins, byte p1, byte p2, byte[] dataIn, Byte le)
+    +interface "<<<back:yellow><color:red><s>CardTransactionManager</back>>>\n<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
+        +<color:red><s>CardTransactionManager prepareApdu (String apduCommand)
+        +<color:red><s>CardTransactionManager prepareApdu (byte[] apduCommand)
+        +<color:red><s>CardTransactionManager prepareApdu (byte cla, byte ins, byte p1, byte p2, byte[] dataIn, Byte le)
 
-        +List<byte[]> getResponsesAsByteArrays ()
-        +List<String> getResponsesAsHexStrings ()
+        +<color:red><s>List<byte[]> getResponsesAsByteArrays ()
+        +<color:red><s>List<String> getResponsesAsHexStrings ()
+
+        +<color:blue>CardTransactionManager prepareCommand (byte[] apdu)
+        +<color:blue>CardTransactionManager prepareCommand (byte[] apdu, int idCommand)
+        +<color:blue>CardTransactionManager prepareCommand (byte[] apdu, int idCommand, long maxDuration)
+
+        +<color:blue>List<byte[]> getLastExecutionResponses ()
+        +<color:blue>byte[] getLastExecutionResponse (int idCommand)
     }
 }
 
