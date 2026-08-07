@@ -15,7 +15,7 @@ versions:
         size: "1.3 MB"
       pdf:
         name: "YYMMDD-SP-CNATerminalAPI-GenericCard_v2.0.0-SNAPSHOT.pdf"
-        size: "710 kB"
+        size: "711 kB"
   - version: "1.0.0"
     status: stable
     files:
