@@ -214,7 +214,7 @@ equivalent native type. Implementations MUST preserve the semantic intent rather
 | `long`          | Signed 64-bit integer.                                           | `long`, `Int64`.
 | `byte array`    | Ordered sequence of octets.                                      | `byte[]`, `[u8]`, `bytes`.
 | `list<T>`       | Ordered collection of `T` values, may contain duplicates.        | `List<T>`, `Vec<T>`.
-| `void`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`.
+| `unit`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`.
 |===
 
 ==== Type tables
