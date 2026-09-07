@@ -63,25 +63,25 @@ end legend
 
 package "terminal.genericcard" as root {
     +class "**final** GenericCardApiProperties" as ApiProperties <<green>> {
-        +{static} **final** VERSION: string
+        +{static} **final** VERSION: String
     }
     +interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
-        +createGenericCardSelectionExtension() -> GenericCardSelectionExtension
+        +createGenericCardSelectionExtension() → GenericCardSelectionExtension
 
-        +createCardTransaction(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) -> CardTransactionManager
+        +createCardTransaction(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) → CardTransactionManager
     }
 
     +interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
-        +addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension
+        +addSuccessfulStatusWord(statusWord: Int) → GenericCardSelectionExtension
     }
 
     +interface "<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
-        +<color:blue>prepareCommand(apdu: byte array) -> CardTransactionManager
-        +<color:blue>prepareCommand(apdu: byte array, idCommand: integer) -> CardTransactionManager
-        +<color:blue>prepareCommand(apdu: byte array, idCommand: integer, maxDuration: long) -> CardTransactionManager
+        +<color:blue>prepareCommand(apdu: ByteArray) → CardTransactionManager
+        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → CardTransactionManager
+        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → CardTransactionManager
 
-        +<color:blue>getLastExecutionResponses() -> list<byte array>
-        +<color:blue>getLastExecutionResponse(idCommand: integer) -> byte array?
+        +<color:blue>getLastExecutionResponses() → List<ByteArray>
+        +<color:blue>getLastExecutionResponse(idCommand: Int) → ByteArray?
     }
 }
 

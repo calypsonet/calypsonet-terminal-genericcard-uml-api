@@ -98,8 +98,9 @@ include::assets/layout/_colophon.adoc[]
 
 This document is the official technical specification of the **{doc-name}** standardised
 by the **{organization}** (CNA).
-It defines, in a language-agnostic way, the interfaces, classes, enumerations, exceptions, structural
-relationships and behavioural requirements that any conforming implementation of the {doc-name} MUST satisfy.
+It defines, in a language-agnostic way (using a notation inspired by the Kotlin language), the interfaces,
+classes, enumerations, exceptions, structural relationships and behavioural requirements that any conforming
+implementation of the {doc-name} MUST satisfy.
 
 The {doc-name} is part of the broader CNA *Terminal API* family. It exposes the minimal contract required to
 exchange raw APDUs with an <<ref_iso7816,ISO/IEC 7816-4>> card that has been selected through the *Terminal Reader API*, without
@@ -199,22 +200,23 @@ Type names follow `UpperCamelCase`; operation, parameter and enumeration-member 
 except for enumeration values which use `UPPER_SNAKE_CASE`. Names defined by this specification are reproduced
 as-is in the UML class diagram (<<sec_class_diagram>>).
 
-==== Language-agnostic types
+==== Data types
 
-The following symbolic type names are used in operation signatures and are mapped, in each binding, to the closest
-equivalent native type. Implementations MUST preserve the semantic intent rather than the syntactic form.
+The following type names, whose notation is inspired by the Kotlin language, are used in operation signatures
+and are mapped, in each binding, to the closest equivalent native type. Implementations MUST preserve the
+semantic intent rather than the syntactic form.
 
 [cols="^.^1,.^3,.^3", options="header"]
 |===
-| Symbolic type   | Description                                                     | Typical bindings
-| `string`        | Sequence of characters, UTF-8 encoded by default.                | `String`, `string`, `str`.
-| `boolean`       | Two-state truth value.                                           | `boolean`, `bool`.
-| `byte`          | Signed 8-bit value.                                              | `byte`, `i8`.
-| `integer`       | Signed 32-bit integer.                                           | `int`, `Int32`.
-| `long`          | Signed 64-bit integer.                                           | `long`, `Int64`.
-| `byte array`    | Ordered sequence of octets.                                      | `byte[]`, `[u8]`, `bytes`.
-| `list<T>`       | Ordered collection of `T` values, may contain duplicates.        | `List<T>`, `Vec<T>`.
-| `unit`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`.
+| Type            | Description                                                     | Typical bindings
+| `String`        | Sequence of characters, UTF-8 encoded by default.                | `String`, `string`, `str`.
+| `Boolean`       | Two-state truth value.                                           | `boolean`, `bool`.
+| `Byte`          | Signed 8-bit value.                                              | `byte`, `i8`.
+| `Int`           | Signed 32-bit integer.                                           | `int`, `Int32`, `i32`.
+| `Long`          | Signed 64-bit integer.                                           | `long`, `Int64`, `i64`.
+| `ByteArray`     | Ordered sequence of octets.                                      | `byte[]`, `[u8]`, `bytes`.
+| `List<T>`       | Ordered collection of `T` values, may contain duplicates.        | `List<T>`, `Vec<T>`.
+| `Unit`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`, `()`.
 |===
 
 ==== Type tables
@@ -243,7 +245,7 @@ Each operation defined in this document is described by a table of the form:
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | The operation's language-agnostic signature.
+| Signature   | The operation's signature.
 | Since       | The version of the API in which the operation was introduced.
 | Description | A normative description of the operation's behaviour.
 | Parameters  | A description of each input parameter.
@@ -263,7 +265,7 @@ not restated for each operation:
 * *Non-`null` results.* Unless the return type is marked nullable (`T?`) or the *Returns* row states otherwise, an
   operation returns a non-`null` value.
 * *Collections.* Unless the return type is marked nullable (`T?`), an operation whose return type is a collection
-  (e.g. `list`, `set`, `map`) returns an empty collection rather than `null`.
+  (e.g. `List`, `Set`, `Map`) returns an empty collection rather than `null`.
 * *Fluent composition.* Builder-style operations return the current instance so that calls can be chained.
 
 ==== Concurrency
@@ -399,7 +401,7 @@ include::uml/class-diagram.puml[Terminal Generic Card API class diagram]
 |===
 | Name      | Type     | Since | Description
 
-| `VERSION` | `string` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value is a dotted decimal of the form `MAJOR.MINOR`.
+| `VERSION` | `String` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value is a dotted decimal of the form `MAJOR.MINOR`.
 |===
 
 [NOTE]
@@ -438,7 +440,7 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array?`
+| Signature   | `getLastExecutionResponse(idCommand: Int) -> ByteArray?`
 | Since       | 2.0
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
@@ -454,7 +456,7 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponses() -> list<byte array>`
+| Signature   | `getLastExecutionResponses() -> List<ByteArray>`
 | Since       | 2.0
 | Description
 | Returns the responses collected during the last call to `processCommands()`, in the order in which the
@@ -462,7 +464,7 @@ detect a relay attack at the individual-command level.
 
   This operation does not alter the internal state of the manager: the list of responses remains available
   until `processCommands()` is called again, at which point it is replaced by the new set of responses.
-| Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
+| Returns     | A `List<ByteArray>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
 | Throws      | None.
 |===
 
@@ -471,10 +473,10 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
+| Signature   | `prepareCommand(apdu: ByteArray) -> CardTransactionManager`
 | Since       | 2.0
 | Description | Prepares an APDU command without command identifier nor duration bound.
-| Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
+| Parameters  | `apdu` -- a non-empty `ByteArray` containing the raw APDU command.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Throws      | None.
 |===
@@ -486,15 +488,15 @@ detect a relay attack at the individual-command level.
 |===
 | Signature
 | `prepareCommand(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int` +
 `) -> CardTransactionManager`
 | Since       | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
   the corresponding response via <<op_CardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
 | Parameters
-| `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
+| `apdu`       -- a non-empty `ByteArray` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Throws      | None.
@@ -507,9 +509,9 @@ detect a relay attack at the individual-command level.
 |===
 | Signature
 | `prepareCommand(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: long` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
 `) -> CardTransactionManager`
 | Since       | 2.0
 | Description
@@ -518,7 +520,7 @@ detect a relay attack at the individual-command level.
   (<<ref_cna_tr,CNA-TR-API>>) is raised if it exceeds the declared bound; the exception message identifies the
   offending command.
 | Parameters
-| `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
+| `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
   `idCommand`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
@@ -589,13 +591,13 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
+| Signature   | `addSuccessfulStatusWord(statusWord: Int) -> GenericCardSelectionExtension`
 | Since       | 1.0
 | Description
 | Adds a status word to the list of those considered successful for the *Select Application* APDU.
 
   *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
-| Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
+| Parameters  | `statusWord` -- a positive `Int` lower than or equal to `FFFFh`.
 | Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
 | Throws      | None.
 |===
