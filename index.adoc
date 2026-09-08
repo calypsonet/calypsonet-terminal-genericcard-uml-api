@@ -245,14 +245,14 @@ Each operation defined in this document is described by a table of the form:
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | The operation's signature.
-| Since       | The version of the API in which the operation was introduced.
-| Description | A normative description of the operation's behaviour.
-| Parameters  | A description of each input parameter.
-| Returns     | A description of the returned value, if any.
+| Signature      | The operation's signature.
+| Since          | The version of the API in which the operation was introduced.
+| Description    | A normative description of the operation's behaviour.
+| Parameters     | A description of each input parameter.
+| Returns        | A description of the returned value, if any.
 | Pre-conditions | The conditions the caller MUST satisfy before invoking the operation, each prefixed by its nature.
-| Errors      | A list of error conditions a correct caller must handle, each mapped to a specific error type.
-| See also    | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
+| Errors         | A list of error conditions a correct caller must handle, each mapped to a specific error type.
+| See also       | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
 |===
 
 ==== Operation contracts
@@ -446,16 +446,16 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponse(idCommand: Int) -> ByteArray?`
-| Since       | 2.0
+| Signature      | `getLastExecutionResponse(idCommand: Int) -> ByteArray?`
+| Since          | 2.0
 | Description
 | Returns the response of the command identified by `idCommand`. If several prepared commands share the same
   identifier, the response of the *last* matching command is returned. The value returned for a given identifier
   is the same as the corresponding element of `getLastExecutionResponses`.
-| Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
-| Returns     | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
+| Parameters     | `idCommand` -- the application-supplied identifier of the command whose response is requested.
+| Returns        | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[op_CardTransactionManager_getLastExecutionResponses]]
@@ -463,17 +463,17 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `getLastExecutionResponses() -> List<ByteArray>`
-| Since       | 2.0
+| Signature      | `getLastExecutionResponses() -> List<ByteArray>`
+| Since          | 2.0
 | Description
 | Returns the responses collected during the last call to `processCommands()`, in the order in which the
   commands were prepared.
 
   This operation does not alter the internal state of the manager: the list of responses remains available
   until `processCommands()` is called again, at which point it is replaced by the new set of responses.
-| Returns     | A `List<ByteArray>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
+| Returns        | A `List<ByteArray>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
 | Pre-conditions | None.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[op_CardTransactionManager_prepareCommand_apdu]]
@@ -481,13 +481,13 @@ detect a relay attack at the individual-command level.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `prepareCommand(apdu: ByteArray) -> CardTransactionManager`
-| Since       | 2.0
-| Description | Prepares an APDU command without command identifier nor duration bound.
-| Parameters  | `apdu` -- a non-empty `ByteArray` containing the raw APDU command.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Signature      | `prepareCommand(apdu: ByteArray) -> CardTransactionManager`
+| Since          | 2.0
+| Description    | Prepares an APDU command without command identifier nor duration bound.
+| Parameters     | `apdu` -- a non-empty `ByteArray` containing the raw APDU command.
+| Returns        | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[op_CardTransactionManager_prepareCommand_withId]]
@@ -500,16 +500,16 @@ detect a relay attack at the individual-command level.
 `{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int` +
 `) -> CardTransactionManager`
-| Since       | 2.0
+| Since          | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
   the corresponding response via <<op_CardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
 | Parameters
 | `apdu`       -- a non-empty `ByteArray` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Returns        | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[op_CardTransactionManager_prepareCommand_withDuration]]
@@ -523,7 +523,7 @@ detect a relay attack at the individual-command level.
 `{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
 `) -> CardTransactionManager`
-| Since       | 2.0
+| Since          | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
   effective duration of the corresponding APDU exchange is measured, and an `InvalidCardResponse`
@@ -533,9 +533,9 @@ detect a relay attack at the individual-command level.
 | `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
   `idCommand`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Returns        | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None at preparation time. The duration check is performed at processing time.
+| Errors         | None at preparation time. The duration check is performed at processing time.
 |===
 
 [[type_GenericCardApiFactory]]
@@ -563,14 +563,14 @@ of the API. It is provided as a single instance whose accessors each return a fr
 `{nbsp}{nbsp}{nbsp}{nbsp}reader: CardReader,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}card: SmartCard` +
 `) -> CardTransactionManager`
-| Since       | 1.0
-| Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
+| Since          | 1.0
+| Description    | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
 | Parameters
 | `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card is reached. +
   `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
-| Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
+| Returns        | A <<type_CardTransactionManager,`CardTransactionManager`>>.
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[op_GenericCardApiFactory_createGenericCardSelectionExtension]]
@@ -578,12 +578,12 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0
-| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Signature      | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
+| Since          | 1.0
+| Description    | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Returns        | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Pre-conditions | None.
-| Errors      | None.
+| Errors         | None.
 |===
 
 [[type_GenericCardSelectionExtension]]
@@ -604,14 +604,14 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `addSuccessfulStatusWord(statusWord: Int) -> GenericCardSelectionExtension`
-| Since       | 1.0
+| Signature      | `addSuccessfulStatusWord(statusWord: Int) -> GenericCardSelectionExtension`
+| Since          | 1.0
 | Description
 | Adds a status word to the list of those considered successful for the *Select Application* APDU.
 
   *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
-| Parameters  | `statusWord` -- a positive `Int` lower than or equal to `FFFFh`.
-| Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
+| Parameters     | `statusWord` -- a positive `Int` lower than or equal to `FFFFh`.
+| Returns        | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
-| Errors      | None.
+| Errors         | None.
 |===
