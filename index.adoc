@@ -250,7 +250,8 @@ Each operation defined in this document is described by a table of the form:
 | Description | A normative description of the operation's behaviour.
 | Parameters  | A description of each input parameter.
 | Returns     | A description of the returned value, if any.
-| Errors      | A list of error conditions, each mapped to a specific error type.
+| Pre-conditions | The conditions the caller MUST satisfy before invoking the operation, each prefixed by its nature. Present only when applicable.
+| Errors      | A list of error conditions a correct caller must handle, each mapped to a specific error type.
 | See also    | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
 |===
 
@@ -259,10 +260,14 @@ Each operation defined in this document is described by a table of the form:
 To avoid repetition, the following rules apply to every operation table in <<sec_specification>> and are therefore
 not restated for each operation:
 
-* *Non-`null` arguments.* Unless explicitly stated otherwise, every input parameter being non-`null` is an
-  implicit pre-condition of the operation. Checking it is the responsibility of the implementation, and failing
-  to meet that pre-condition MUST raise an illegal argument error. This implicit check is not restated in the
-  *Errors* row, which states `None.` when no other error can occur.
+* *Pre-conditions.* The *Pre-conditions* row states what the caller MUST guarantee before invoking the
+  operation. Violating one is a contract error, never listed in the *Errors* row, which describes only the
+  outcomes a correct caller must handle. Each entry is prefixed by its nature, which determines the error
+  raised when the condition is not met:
+** *Argument* -- an illegal argument error.
+** *Range* -- an index out of bounds error.
+** *State* -- an illegal state error.
+** *Capability* -- an unsupported operation error.
 * *Non-`null` results.* Unless the return type is marked nullable (`T?`) or the *Returns* row states otherwise, an
   operation returns a non-`null` value.
 * *Collections.* Unless the return type is marked nullable (`T?`), an operation whose return type is a collection
@@ -449,6 +454,7 @@ detect a relay attack at the individual-command level.
   is the same as the corresponding element of `getLastExecutionResponses`.
 | Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
 | Returns     | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None.
 |===
 
@@ -479,6 +485,7 @@ detect a relay attack at the individual-command level.
 | Description | Prepares an APDU command without command identifier nor duration bound.
 | Parameters  | `apdu` -- a non-empty `ByteArray` containing the raw APDU command.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None.
 |===
 
@@ -500,6 +507,7 @@ detect a relay attack at the individual-command level.
 | `apdu`       -- a non-empty `ByteArray` containing the raw APDU command. +
   `idCommand`  -- the application-supplied identifier of this command.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None.
 |===
 
@@ -525,6 +533,7 @@ detect a relay attack at the individual-command level.
   `idCommand`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
 | Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None at preparation time. The duration check is performed at processing time.
 |===
 
@@ -559,6 +568,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 | `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card is reached. +
   `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
 | Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None.
 |===
 
@@ -600,5 +610,6 @@ of the API. It is provided as a single instance whose accessors each return a fr
   *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
 | Parameters  | `statusWord` -- a positive `Int` lower than or equal to `FFFFh`.
 | Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors      | None.
 |===
