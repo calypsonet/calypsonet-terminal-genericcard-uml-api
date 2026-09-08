@@ -250,7 +250,7 @@ Each operation defined in this document is described by a table of the form:
 | Description | A normative description of the operation's behaviour.
 | Parameters  | A description of each input parameter.
 | Returns     | A description of the returned value, if any.
-| Pre-conditions | The conditions the caller MUST satisfy before invoking the operation, each prefixed by its nature. Present only when applicable.
+| Pre-conditions | The conditions the caller MUST satisfy before invoking the operation, each prefixed by its nature.
 | Errors      | A list of error conditions a correct caller must handle, each mapped to a specific error type.
 | See also    | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
 |===
@@ -472,6 +472,7 @@ detect a relay attack at the individual-command level.
   This operation does not alter the internal state of the manager: the list of responses remains available
   until `processCommands()` is called again, at which point it is replaced by the new set of responses.
 | Returns     | A `List<ByteArray>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
+| Pre-conditions | None.
 | Errors      | None.
 |===
 
@@ -581,6 +582,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 | Since       | 1.0
 | Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
 | Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Pre-conditions | None.
 | Errors      | None.
 |===
 
