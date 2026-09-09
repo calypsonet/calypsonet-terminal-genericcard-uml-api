@@ -62,20 +62,20 @@ legend top
 end legend
 
 package "terminal.genericcard" as root {
-    +class "**final** GenericCardApiProperties" as ApiProperties <<green>> {
+    class "**final** GenericCardApiProperties" as ApiProperties <<green>> {
         +{static} **final** VERSION: String
     }
-    +interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
+    interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
         +createGenericCardSelectionExtension() → GenericCardSelectionExtension
 
         +createCardTransaction(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) → CardTransactionManager
     }
 
-    +interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
+    interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
         +addSuccessfulStatusWord(statusWord: Int) → GenericCardSelectionExtension
     }
 
-    +interface "<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
+    interface "<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
         +<color:blue>prepareCommand(apdu: ByteArray) → CardTransactionManager
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → CardTransactionManager
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → CardTransactionManager
