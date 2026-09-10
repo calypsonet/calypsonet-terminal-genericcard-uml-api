@@ -70,7 +70,7 @@ legend top
 end legend
 
 package "terminal.genericcard" as root {
-    class "GenericCardApiProperties" as ApiProperties <<green>> <<constants>> {
+    class "GenericCardApiProperties" as ApiProperties <<constants>> <<green>> {
         +const VERSION: String = "2.0"
     }
     interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
