@@ -80,13 +80,13 @@ package "terminal.genericcard" as root {
     }
 
     interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
-        +addSuccessfulStatusWord(statusWord: Int) → GenericCardSelectionExtension
+        +addSuccessfulStatusWord(statusWord: Int) → Self
     }
 
     interface "<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
-        +<color:blue>prepareCommand(apdu: ByteArray) → CardTransactionManager
-        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → CardTransactionManager
-        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → CardTransactionManager
+        +<color:blue>prepareCommand(apdu: ByteArray) → Self
+        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → Self
+        +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → Self
 
         +<color:blue>getLastExecutionResponses() → List<ByteArray>
         +<color:blue>getLastExecutionResponse(idCommand: Int) → ByteArray?
