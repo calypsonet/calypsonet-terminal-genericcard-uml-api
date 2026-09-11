@@ -79,11 +79,11 @@ package "terminal.genericcard" as root {
         +createCardTransaction(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) → CardTransactionManager
     }
 
-    interface "<<<back:yellow>CardSelectionExtension</back>>>\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
+    interface "«<back:yellow>CardSelectionExtension</back>»\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
         +addSuccessfulStatusWord(statusWord: Int) → Self
     }
 
-    interface "<<<back:yellow><color:blue>IsoCardTransactionManager</back>>>\nCardTransactionManager" as CardTransactionManager <<blue>> {
+    interface "«<back:yellow><color:blue>IsoCardTransactionManager</back>»\nCardTransactionManager" as CardTransactionManager <<blue>> {
         +<color:blue>prepareCommand(apdu: ByteArray) → Self
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → Self
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → Self
