@@ -76,14 +76,14 @@ package "terminal.genericcard" as root {
     interface "GenericCardApiFactory" as GenericCardApiFactory <<blue>> {
         +createGenericCardSelectionExtension() → GenericCardSelectionExtension
 
-        +createCardTransaction(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) → CardTransactionManager
+        +<color:blue>createGenericCardTransactionManager(reader: <back:yellow>CardReader</back>, card: <back:yellow>SmartCard</back>) → GenericCardTransactionManager
     }
 
     interface "«<back:yellow>CardSelectionExtension</back>»\nGenericCardSelectionExtension" as GenericCardSelectionExtension <<blue>> {
         +addSuccessfulStatusWord(statusWord: Int) → Self
     }
 
-    interface "«<back:yellow><color:blue>IsoCardTransactionManager</back>»\nCardTransactionManager" as CardTransactionManager <<blue>> {
+    interface "«<back:yellow><color:blue>IsoCardTransactionManager</color></back>»\n<color:blue>GenericCardTransactionManager" as GenericCardTransactionManager <<blue>> {
         +<color:blue>prepareCommand(apdu: ByteArray) → Self
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int) → Self
         +<color:blue>prepareCommand(apdu: ByteArray, idCommand: Int, maxDuration: Long) → Self
@@ -96,7 +96,7 @@ package "terminal.genericcard" as root {
 ' Associations
 
 GenericCardApiFactory ..> GenericCardSelectionExtension #C_LINK : create >
-GenericCardApiFactory ..> CardTransactionManager #C_LINK : create >
+GenericCardApiFactory ..> GenericCardTransactionManager #C_LINK : create >
 
 ' == LAYOUT ==
 
