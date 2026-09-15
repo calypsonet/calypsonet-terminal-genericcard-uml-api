@@ -514,7 +514,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 The `GenericCardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
 APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
-operation. Each prepared command MAY carry an optional *command identifier* (`idCommand`) supplied by the
+operation. Each prepared command MAY carry an optional *command identifier* (`commandId`) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
 Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
 control the APDU exchange execution time at the individual-command level -- for example to detect a relay
@@ -525,13 +525,13 @@ attack.
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature      | `getLastExecutionResponse(idCommand: Int) -> ByteArray?`
+| Signature      | `getLastExecutionResponse(commandId: Int) -> ByteArray?`
 | Since          | 2.0
 | Description
-| Returns the response of the command identified by `idCommand`. If several prepared commands share the same
+| Returns the response of the command identified by `commandId`. If several prepared commands share the same
   identifier, the response of the *last* matching command is returned. The value returned for a given identifier
   is the same as the corresponding element of `getLastExecutionResponses`.
-| Parameters     | `idCommand` -- the application-supplied identifier of the command whose response is requested.
+| Parameters     | `commandId` -- the application-supplied identifier of the command whose response is requested.
 | Returns        | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors         | None.
@@ -577,7 +577,7 @@ attack.
 | Signature
 | `prepareCommand(` +
 `{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int` +
+`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int` +
 `) -> Self`
 | Since          | 2.0
 | Description
@@ -585,7 +585,7 @@ attack.
   the corresponding response via <<op_GenericCardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
 | Parameters
 | `apdu`       -- a non-empty `ByteArray` containing the raw APDU command. +
-  `idCommand`  -- the application-supplied identifier of this command.
+  `commandId`  -- the application-supplied identifier of this command.
 | Returns        | The current instance (`Self`).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors         | None.
@@ -599,7 +599,7 @@ attack.
 | Signature
 | `prepareCommand(` +
 `{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
 `) -> Self`
 | Since          | 2.0
@@ -610,7 +610,7 @@ attack.
   offending command.
 | Parameters
 | `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
-  `idCommand`   -- the application-supplied identifier of this command. +
+  `commandId`   -- the application-supplied identifier of this command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
 | Returns        | The current instance (`Self`).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
