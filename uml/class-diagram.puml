@@ -85,8 +85,8 @@ package "terminal.genericcard" as root {
 
     interface "«<back:yellow><color:blue>IsoCardTransactionManager</color></back>»\n<color:blue>GenericCardTransactionManager" as GenericCardTransactionManager <<blue>> {
         +<color:blue>prepareCommand(apdu: ByteArray) → Self
-        +<color:blue>prepareCommandWithId(apdu: ByteArray, commandId: Int) → Self
-        +<color:blue>prepareCommandWithMaxDuration(apdu: ByteArray, commandId: Int, maxDuration: Long) → Self
+        +<color:blue>prepareCommandWithId(commandId: Int, apdu: ByteArray) → Self
+        +<color:blue>prepareCommandWithMaxDuration(commandId: Int, apdu: ByteArray, maxDuration: Long) → Self
 
         +<color:blue>getLastExecutionResponses() → List<ByteArray>
         +<color:blue>getLastExecutionResponse(commandId: Int) → ByteArray?

@@ -576,16 +576,16 @@ attack.
 |===
 | Signature
 | `prepareCommandWithId(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int` +
+`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray` +
 `) -> Self`
 | Since          | 2.0
 | Description
 | Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
   the corresponding response via <<op_GenericCardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
 | Parameters
-| `apdu`       -- a non-empty `ByteArray` containing the raw APDU command. +
-  `commandId`  -- the application-supplied identifier of this command.
+| `commandId`  -- the application-supplied identifier of this command. +
+  `apdu`       -- a non-empty `ByteArray` containing the raw APDU command.
 | Returns        | The current instance (`Self`).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
 | Errors         | None.
@@ -598,8 +598,8 @@ attack.
 |===
 | Signature
 | `prepareCommandWithMaxDuration(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
 `) -> Self`
 | Since          | 2.0
@@ -609,8 +609,8 @@ attack.
   (<<ref_cna_tr,CNA-TR-API>>) is raised if it exceeds the declared bound; the error message identifies the
   offending command.
 | Parameters
-| `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
-  `commandId`   -- the application-supplied identifier of this command. +
+| `commandId`   -- the application-supplied identifier of this command. +
+  `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
   `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
 | Returns        | The current instance (`Self`).
 | Pre-conditions | *Argument* -- every parameter is non-`null`.
