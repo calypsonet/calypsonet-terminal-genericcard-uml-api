@@ -513,7 +513,7 @@ of the API. It is provided as a single instance whose accessors each return a fr
 |===
 
 The `GenericCardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
-APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
+APDU commands with `prepareCommand`, `prepareCommandWithId` or `prepareCommandWithMaxDuration` and processes them through the inherited `processCommands()`
 operation. Each prepared command MAY carry an optional *command identifier* (`commandId`) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
 Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
@@ -555,8 +555,8 @@ attack.
 | Errors         | None.
 |===
 
-[[op_GenericCardTransactionManager_prepareCommand_apdu]]
-===== Prepare Command (APDU)
+[[op_GenericCardTransactionManager_prepareCommand]]
+===== Prepare Command
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
@@ -569,13 +569,13 @@ attack.
 | Errors         | None.
 |===
 
-[[op_GenericCardTransactionManager_prepareCommand_withId]]
-===== Prepare Command (APDU, ID Command)
+[[op_GenericCardTransactionManager_prepareCommandWithId]]
+===== Prepare Command With ID
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature
-| `prepareCommand(` +
+| `prepareCommandWithId(` +
 `{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int` +
 `) -> Self`
@@ -591,13 +591,13 @@ attack.
 | Errors         | None.
 |===
 
-[[op_GenericCardTransactionManager_prepareCommand_withDuration]]
-===== Prepare Command (APDU, ID Command, Max Duration)
+[[op_GenericCardTransactionManager_prepareCommandWithMaxDuration]]
+===== Prepare Command With Max Duration
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Signature
-| `prepareCommand(` +
+| `prepareCommandWithMaxDuration(` +
 `{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
 `{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
