@@ -18,6 +18,8 @@ include::assets/legal/_license-cc-by-nd-4.0.adoc[]
 // Revision (bumped every edition)
 :revnumber: 2.0.0-SNAPSHOT
 :revdate: 2026-07-20
+// API version exposed by the VERSION constant: MAJOR.MINOR of revnumber
+:api-version: 2.0
 //
 // ============================================================================
 // Document-specific constants (local — differ per spec)
@@ -98,8 +100,9 @@ include::assets/layout/_colophon.adoc[]
 
 This document is the official technical specification of the **{doc-name}** standardised
 by the **{organization}** (CNA).
-It defines, in a language-agnostic way, the interfaces, classes, enumerations, exceptions, structural
-relationships and behavioural requirements that any conforming implementation of the {doc-name} MUST satisfy.
+It defines, in a language-agnostic way (using a notation inspired by the Kotlin language), the interfaces,
+classes, enumerations, errors, structural relationships and behavioural requirements that any conforming
+implementation of the {doc-name} MUST satisfy.
 
 The {doc-name} is part of the broader CNA *Terminal API* family. It exposes the minimal contract required to
 exchange raw APDUs with an <<ref_iso7816,ISO/IEC 7816-4>> card that has been selected through the *Terminal Reader API*, without
@@ -199,32 +202,36 @@ Type names follow `UpperCamelCase`; operation, parameter and enumeration-member 
 except for enumeration values which use `UPPER_SNAKE_CASE`. Names defined by this specification are reproduced
 as-is in the UML class diagram (<<sec_class_diagram>>).
 
-==== Language-agnostic types
+==== Data types
 
-The following symbolic type names are used in operation signatures and are mapped, in each binding, to the closest
-equivalent native type. Implementations MUST preserve the semantic intent rather than the syntactic form.
+The following type names, whose notation is inspired by the Kotlin language, are used in operation signatures
+and are mapped, in each binding, to the closest equivalent native type. Implementations MUST preserve the
+semantic intent rather than the syntactic form.
 
 [cols="^.^1,.^3,.^3", options="header"]
 |===
-| Symbolic type   | Description                                                     | Typical bindings
-| `string`        | Sequence of characters, UTF-8 encoded by default.                | `String`, `string`, `str`.
-| `boolean`       | Two-state truth value.                                           | `boolean`, `bool`.
-| `byte`          | Signed 8-bit value.                                              | `byte`, `i8`.
-| `integer`       | Signed 32-bit integer.                                           | `int`, `Int32`.
-| `long`          | Signed 64-bit integer.                                           | `long`, `Int64`.
-| `byte array`    | Ordered sequence of octets.                                      | `byte[]`, `[u8]`, `bytes`.
-| `list<T>`       | Ordered collection of `T` values, may contain duplicates.        | `List<T>`, `Vec<T>`.
-| `void`          | Indicates that an operation returns no value.                    | `void`, `Unit`, `None`.
+| Type        | Description                                                                         | Typical bindings
+| `String`    | Sequence of characters, UTF-8 encoded by default.                                   | `String`, `string`, `str`.
+| `Boolean`   | Two-state truth value.                                                              | `boolean`, `bool`.
+| `Byte`      | Signed 8-bit value.                                                                 | `byte`, `i8`.
+| `Int`       | Signed 32-bit integer.                                                              | `int`, `Int32`, `i32`.
+| `Long`      | Signed 64-bit integer.                                                              | `long`, `Int64`, `i64`.
+| `ByteArray` | Ordered sequence of octets.                                                         | `byte[]`, `[u8]`, `bytes`.
+| `List<T>`   | Ordered collection of `T` values, may contain duplicates.                           | `List<T>`, `Vec<T>`.
+| `T?`        | Nullable value: either a `T` value or `null`.                                       | `Optional<T>`, `T?`, `Option<T>`.
+| `null`      | Absence of value, the alternative held by a nullable type.                          | `null`, `nil`, `None`.
+| `Self`      | Own type of the receiver: a fluent operation returns the instance it was called on. | `Self`, `T` (recursive generic).
+| `Unit`      | Indicates that an operation returns no value.                                       | `void`, `Unit`, `()`.
 |===
 
 ==== Type tables
 
-Each interface, class, enumeration and exception defined in this document is described by a table of the form:
+Each interface, class, enumeration and error defined in this document is described by a table of the form:
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
 | Name       | The type's normalized name.
-| Kind       | The category of the type (interface, class, enumeration, exception, etc.).
+| Kind       | The category of the type (interface, class, enumeration, error, etc.).
 | Namespace  | The namespace in which the type is defined.
 | Extends    | The type extended by this type, when applicable.
 | Implements | The interface implemented by this type, when applicable.
@@ -243,13 +250,14 @@ Each operation defined in this document is described by a table of the form:
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | The operation's language-agnostic signature.
-| Since       | The version of the API in which the operation was introduced.
-| Description | A normative description of the operation's behaviour.
-| Parameters  | A description of each input parameter.
-| Returns     | A description of the returned value, if any.
-| Throws      | A list of exceptional conditions, each mapped to a specific exception type.
-| See also    | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
+| Signature      | The operation's signature.
+| Since          | The version of the API in which the operation was introduced.
+| Description    | A normative description of the operation's behaviour.
+| Parameters     | A description of each input parameter.
+| Returns        | A description of the returned value, if any.
+| Pre-conditions | The conditions the caller MUST satisfy before invoking the operation, each prefixed by its nature.
+| Errors         | A list of error conditions a correct caller must handle, each mapped to a specific error type.
+| See also       | Cross-references to related operations or types, each a hyperlink to the corresponding table. Present only when applicable.
 |===
 
 ==== Operation contracts
@@ -257,13 +265,18 @@ Each operation defined in this document is described by a table of the form:
 To avoid repetition, the following rules apply to every operation table in <<sec_specification>> and are therefore
 not restated for each operation:
 
-* *Non-`null` arguments.* Unless explicitly stated otherwise, every input parameter MUST be non-`null`. An
-  implementation MUST raise `IllegalArgumentException` if a `null` value is supplied. This implicit `null` check is
-  not repeated in the *Throws* row, which states `None.` when no other exception can occur.
+* *Pre-conditions.* The *Pre-conditions* row states what the caller MUST guarantee before invoking the
+  operation. Violating one is a contract error, never listed in the *Errors* row, which describes only the
+  outcomes a correct caller must handle. Each entry is prefixed by its nature, which determines the error
+  raised when the condition is not met:
+** *Argument* -- an illegal argument error. Applies to any invalid argument, including values bounded by a card or SAM protocol.
+** *Range* -- an index out of bounds error. Applies when the argument designates a position within a collection or memory image exposed by the API.
+** *State* -- an illegal state error.
+** *Capability* -- an unsupported operation error.
 * *Non-`null` results.* Unless the return type is marked nullable (`T?`) or the *Returns* row states otherwise, an
   operation returns a non-`null` value.
 * *Collections.* Unless the return type is marked nullable (`T?`), an operation whose return type is a collection
-  (e.g. `list`, `set`, `map`) returns an empty collection rather than `null`.
+  (e.g. `List`, `Set`, `Map`) returns an empty collection rather than `null`.
 * *Fluent composition.* Builder-style operations return the current instance so that calls can be chained.
 
 ==== Concurrency
@@ -379,196 +392,76 @@ include::uml/class-diagram.puml[Terminal Generic Card API class diagram]
 [[sec_specification]]
 == API Specification
 
-=== Classes
+=== Constants
 
 [[type_GenericCardApiProperties]]
 ==== Generic Card API Properties
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Name     | `GenericCardApiProperties`
-| Kind     | Final class
+| Name       | `GenericCardApiProperties`
+| Kind       | Constants
 | Namespace  | `genericcard`
-| Since    | 1.0
-| Purpose  | Exposes the immutable properties of the {doc-name}.
+| Since      | 1.0
+| Purpose    | Exposes the immutable properties of the {doc-name}.
 |===
-
-===== Constants
 
 [cols="^.^1,^.^1,^.^1,.^4", options="header"]
 |===
 | Name      | Type     | Since | Description
 
-| `VERSION` | `string` | 1.0 | String representation of the version of the API implemented by the conforming binding (e.g. `"2.0"`). The value is a dotted decimal of the form `MAJOR.MINOR`.
+| `VERSION` | `String` | 1.0 | String representation of the version of the API implemented by the conforming binding.
+  The value is a dotted decimal of the form `MAJOR.MINOR`; it is `"{api-version}"` for this revision of the specification.
 |===
-
-[NOTE]
-====
-The `GenericCardApiProperties` type cannot be instantiated; it exposes only static properties.
-====
 
 === API Interfaces
-
-[[type_CardTransactionManager]]
-==== Card Transaction Manager
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Name     | `CardTransactionManager`
-| Kind     | Interface
-| Namespace  | `genericcard`
-| Extends  | `IsoCardTransactionManager` (<<ref_cna_tr,CNA-TR-API>>)
-| Since    | 1.0
-| Purpose
-| Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
-  card. The stereotype on `IsoCardTransactionManager` grants access to the multi-channel cast
-  `asMultichannelCardTransactionManager()` defined by <<ref_cna_tr,CNA-TR-API>> when the underlying card supports
-  multi-channel. An instance is obtained via <<op_GenericCardApiFactory_createCardTransaction,`GenericCardApiFactory.createCardTransaction`>>.
-|===
-
-The `CardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
-APDU commands with the `prepareCommand` overloads and processes them through the inherited `processCommands()`
-operation. Each prepared command MAY carry an optional *command identifier* (`idCommand`) supplied by the
-application, used to retrieve the corresponding response or to identify the failing command in case of error.
-Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
-detect a relay attack at the individual-command level.
-
-[[op_CardTransactionManager_getLastExecutionResponse]]
-===== Get Last Execution Response
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature   | `getLastExecutionResponse(idCommand: integer) -> byte array?`
-| Since       | 2.0
-| Description
-| Returns the response of the command identified by `idCommand`. If several prepared commands share the same
-  identifier, the response of the *last* matching command is returned. The value returned for a given identifier
-  is the same as the corresponding element of `getLastExecutionResponses`.
-| Parameters  | `idCommand` -- the application-supplied identifier of the command whose response is requested.
-| Returns     | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
-| Throws      | None.
-|===
-
-[[op_CardTransactionManager_getLastExecutionResponses]]
-===== Get Last Execution Responses
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature   | `getLastExecutionResponses() -> list<byte array>`
-| Since       | 2.0
-| Description
-| Returns the responses collected during the last call to `processCommands()`, in the order in which the
-  commands were prepared.
-
-  This operation does not alter the internal state of the manager: the list of responses remains available
-  until `processCommands()` is called again, at which point it is replaced by the new set of responses.
-| Returns     | A `list<byte array>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
-| Throws      | None.
-|===
-
-[[op_CardTransactionManager_prepareCommand_apdu]]
-===== Prepare Command (APDU)
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature   | `prepareCommand(apdu: byte array) -> CardTransactionManager`
-| Since       | 2.0
-| Description | Prepares an APDU command without command identifier nor duration bound.
-| Parameters  | `apdu` -- a non-empty `byte array` containing the raw APDU command.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
-| Throws      | None.
-|===
-
-[[op_CardTransactionManager_prepareCommand_withId]]
-===== Prepare Command (APDU, ID Command)
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature
-| `prepareCommand(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer` +
-`) -> CardTransactionManager`
-| Since       | 2.0
-| Description
-| Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
-  the corresponding response via <<op_CardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
-| Parameters
-| `apdu`       -- a non-empty `byte array` containing the raw APDU command. +
-  `idCommand`  -- the application-supplied identifier of this command.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
-| Throws      | None.
-|===
-
-[[op_CardTransactionManager_prepareCommand_withDuration]]
-===== Prepare Command (APDU, ID Command, Max Duration)
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature
-| `prepareCommand(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}apdu: byte array,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}idCommand: integer,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: long` +
-`) -> CardTransactionManager`
-| Since       | 2.0
-| Description
-| Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
-  effective duration of the corresponding APDU exchange is measured, and an `InvalidCardResponseException`
-  (<<ref_cna_tr,CNA-TR-API>>) is raised if it exceeds the declared bound; the exception message identifies the
-  offending command.
-| Parameters
-| `apdu`        -- a non-empty `byte array` containing the raw APDU command. +
-  `idCommand`   -- the application-supplied identifier of this command. +
-  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
-| Returns     | The current instance (<<type_CardTransactionManager,`CardTransactionManager`>>).
-| Throws      | None at preparation time. The duration check is performed at processing time.
-|===
 
 [[type_GenericCardApiFactory]]
 ==== Generic Card API Factory
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Name     | `GenericCardApiFactory`
-| Kind     | Interface
+| Name       | `GenericCardApiFactory`
+| Kind       | Interface
 | Namespace  | `genericcard`
-| Since    | 1.0
-| Purpose  | Factory used by the application to obtain instances of the public types provided by the API.
+| Since      | 1.0
+| Purpose    | Factory used by the application to obtain instances of the public types provided by the API.
 |===
 
 The `GenericCardApiFactory` is the single entry point through which the application instantiates the public types
 of the API. It is provided as a single instance whose accessors each return a fresh, fully initialised object.
-
-[[op_GenericCardApiFactory_createCardTransaction]]
-===== Create Card Transaction
-
-[cols="^.^1h,.^5", grid=rows, frame=all]
-|===
-| Signature
-| `createCardTransaction(` +
-`{nbsp}{nbsp}{nbsp}{nbsp}reader: CardReader,` +
-`{nbsp}{nbsp}{nbsp}{nbsp}card: SmartCard` +
-`) -> CardTransactionManager`
-| Since       | 1.0
-| Description | Returns a new, freshly initialised <<type_CardTransactionManager,`CardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
-| Parameters
-| `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card is reached. +
-  `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
-| Returns     | A <<type_CardTransactionManager,`CardTransactionManager`>>.
-| Throws      | None.
-|===
 
 [[op_GenericCardApiFactory_createGenericCardSelectionExtension]]
 ===== Create Generic Card Selection Extension
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
-| Since       | 1.0
-| Description | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Returns     | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
-| Throws      | None.
+| Signature      | `createGenericCardSelectionExtension() -> GenericCardSelectionExtension`
+| Since          | 1.0
+| Description    | Returns a new, freshly initialised <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Returns        | A <<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>.
+| Pre-conditions | None.
+| Errors         | None.
+|===
+
+[[op_GenericCardApiFactory_createGenericCardTransactionManager]]
+===== Create Generic Card Transaction Manager
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature
+| `createGenericCardTransactionManager(` +
+`{nbsp}{nbsp}{nbsp}{nbsp}reader: CardReader,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}card: SmartCard` +
+`) -> GenericCardTransactionManager`
+| Since          | 1.0
+| Description    | Returns a new, freshly initialised <<type_GenericCardTransactionManager,`GenericCardTransactionManager`>>, bound to the supplied reader and to the initial card data provided by the selection process.
+| Parameters
+| `reader` (`CardReader` (<<ref_cna_tr,CNA-TR-API>>)) -- the reader through which the card is reached. +
+  `card` (`SmartCard` (<<ref_cna_tr,CNA-TR-API>>))   -- the initial card data provided by the selection process.
+| Returns        | A <<type_GenericCardTransactionManager,`GenericCardTransactionManager`>>.
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Errors         | None.
 |===
 
 [[type_GenericCardSelectionExtension]]
@@ -576,12 +469,12 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Name     | `GenericCardSelectionExtension`
-| Kind     | Interface
+| Name       | `GenericCardSelectionExtension`
+| Kind       | Interface
 | Namespace  | `genericcard`
-| Extends  | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
-| Since    | 1.0
-| Purpose  | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU. An instance is obtained via <<op_GenericCardApiFactory_createGenericCardSelectionExtension,`GenericCardApiFactory.createGenericCardSelectionExtension`>>.
+| Extends    | `CardSelectionExtension` (<<ref_cna_tr,CNA-TR-API>>)
+| Since      | 1.0
+| Purpose    | Extends the `CardSelectionExtension` interface defined by the *Terminal Reader API* to expose a way to declare additional successful status words for the *Select Application* APDU. An instance is obtained via <<op_GenericCardApiFactory_createGenericCardSelectionExtension,`GenericCardApiFactory.createGenericCardSelectionExtension`>>.
 |===
 
 [[op_GenericCardSelectionExtension_addSuccessfulStatusWord]]
@@ -589,13 +482,137 @@ of the API. It is provided as a single instance whose accessors each return a fr
 
 [cols="^.^1h,.^5", grid=rows, frame=all]
 |===
-| Signature   | `addSuccessfulStatusWord(statusWord: integer) -> GenericCardSelectionExtension`
-| Since       | 1.0
+| Signature      | `addSuccessfulStatusWord(statusWord: Int) -> Self`
+| Since          | 1.0
 | Description
 | Adds a status word to the list of those considered successful for the *Select Application* APDU.
 
   *Note:* the list initially contains the standard successful status word `9000h`; each call adds to the existing set and never removes that implicit entry.
-| Parameters  | `statusWord` -- a positive `integer` lower than or equal to `FFFFh`.
-| Returns     | The current instance (<<type_GenericCardSelectionExtension,`GenericCardSelectionExtension`>>).
-| Throws      | None.
+| Parameters     | `statusWord` -- the status word to add.
+| Returns        | The current instance (`Self`).
+| Pre-conditions | *Argument* -- every parameter is non-`null`. +
+  *Argument* -- `statusWord` is in the range `[0x0000, 0xFFFF]`.
+| Errors         | None.
+|===
+
+[[type_GenericCardTransactionManager]]
+==== Generic Card Transaction Manager
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Name       | `GenericCardTransactionManager`
+| Kind       | Interface
+| Namespace  | `genericcard`
+| Extends    | `IsoCardTransactionManager` (<<ref_cna_tr,CNA-TR-API>>)
+| Since      | 1.0
+| Purpose
+| Provides the basic operations required to prepare, identify and process APDU exchanges with an ISO/IEC 7816-4
+  card. Extending `IsoCardTransactionManager` grants access to the multi-channel cast
+  `asMultichannelCardTransactionManager()` defined by <<ref_cna_tr,CNA-TR-API>> when the underlying card supports
+  multi-channel. An instance is obtained via <<op_GenericCardApiFactory_createGenericCardTransactionManager,`GenericCardApiFactory.createGenericCardTransactionManager`>>.
+|===
+
+The `GenericCardTransactionManager` uses a *prepare/process* model inherited from <<ref_cna_tr,CNA-TR-API>>: the application prepares
+APDU commands with `prepareCommand`, `prepareCommandWithId` or `prepareCommandWithMaxDuration` and processes them through the inherited `processCommands()`
+operation. Each prepared command MAY carry an optional *command identifier* (`commandId`) supplied by the
+application, used to retrieve the corresponding response or to identify the failing command in case of error.
+Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
+control the APDU exchange execution time at the individual-command level -- for example to detect a relay
+attack.
+
+[[op_GenericCardTransactionManager_getLastExecutionResponse]]
+===== Get Last Execution Response
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature      | `getLastExecutionResponse(commandId: Int) -> ByteArray?`
+| Since          | 2.0
+| Description
+| Returns the response of the command identified by `commandId`. If several prepared commands share the same
+  identifier, the response of the *last* matching command is returned. The value returned for a given identifier
+  is the same as the corresponding element of `getLastExecutionResponses`.
+| Parameters     | `commandId` -- the application-supplied identifier of the command whose response is requested.
+| Returns        | The non-empty response bytes, or `null` if no command with the supplied identifier produced a response.
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Errors         | None.
+|===
+
+[[op_GenericCardTransactionManager_getLastExecutionResponses]]
+===== Get Last Execution Responses
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature      | `getLastExecutionResponses() -> List<ByteArray>`
+| Since          | 2.0
+| Description
+| Returns the responses collected during the last call to `processCommands()`, in the order in which the
+  commands were prepared.
+
+  This operation does not alter the internal state of the manager: the list of responses remains available
+  until `processCommands()` is called again, at which point it is replaced by the new set of responses.
+| Returns        | A `List<ByteArray>` representing the command responses, in the order in which the commands were sent; empty if no command has been executed.
+| Pre-conditions | None.
+| Errors         | None.
+|===
+
+[[op_GenericCardTransactionManager_prepareCommand]]
+===== Prepare Command
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature      | `prepareCommand(apdu: ByteArray) -> Self`
+| Since          | 2.0
+| Description    | Prepares an APDU command without command identifier nor duration bound.
+| Parameters     | `apdu` -- a non-empty `ByteArray` containing the raw APDU command.
+| Returns        | The current instance (`Self`).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Errors         | None.
+|===
+
+[[op_GenericCardTransactionManager_prepareCommandWithId]]
+===== Prepare Command With ID
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature
+| `prepareCommandWithId(` +
+`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray` +
+`) -> Self`
+| Since          | 2.0
+| Description
+| Prepares an APDU command with an application-supplied identifier. The identifier MAY later be used to retrieve
+  the corresponding response via <<op_GenericCardTransactionManager_getLastExecutionResponse,`getLastExecutionResponse`>>.
+| Parameters
+| `commandId`  -- the application-supplied identifier of this command. +
+  `apdu`       -- a non-empty `ByteArray` containing the raw APDU command.
+| Returns        | The current instance (`Self`).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Errors         | None.
+|===
+
+[[op_GenericCardTransactionManager_prepareCommandWithMaxDuration]]
+===== Prepare Command With Max Duration
+
+[cols="^.^1h,.^5", grid=rows, frame=all]
+|===
+| Signature
+| `prepareCommandWithMaxDuration(` +
+`{nbsp}{nbsp}{nbsp}{nbsp}commandId: Int,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}apdu: ByteArray,` +
+`{nbsp}{nbsp}{nbsp}{nbsp}maxDuration: Long` +
+`) -> Self`
+| Since          | 2.0
+| Description
+| Prepares an APDU command with an application-supplied identifier and a maximum tolerated exchange duration. The
+  effective duration of the corresponding APDU exchange is measured, and an `InvalidCardResponse`
+  (<<ref_cna_tr,CNA-TR-API>>) is raised if it exceeds the declared bound; the error message identifies the
+  offending command.
+| Parameters
+| `commandId`   -- the application-supplied identifier of this command. +
+  `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
+  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
+| Returns        | The current instance (`Self`).
+| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Errors         | None at preparation time. The duration check is performed at processing time.
 |===
