@@ -516,7 +516,8 @@ The `GenericCardTransactionManager` uses a *prepare/process* model inherited fro
 APDU commands with `prepareCommand`, `prepareCommandWithId` or `prepareCommandWithMaxDuration` and processes them through the inherited `processCommands()`
 operation. Each prepared command MAY carry an optional *command identifier* (`commandId`) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
-Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in milliseconds) used to
+Each prepared command MAY also carry an optional *maximum duration* (`maxDuration`, in microseconds, the effective
+resolution of the measurement depending on the implementation) used to
 control the APDU exchange execution time at the individual-command level -- for example to detect a relay
 attack.
 
@@ -611,8 +612,9 @@ attack.
 | Parameters
 | `commandId`   -- the application-supplied identifier of this command. +
   `apdu`        -- a non-empty `ByteArray` containing the raw APDU command. +
-  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in milliseconds.
+  `maxDuration` -- the maximum tolerated duration of the APDU exchange, in microseconds.
 | Returns        | The current instance (`Self`).
-| Pre-conditions | *Argument* -- every parameter is non-`null`.
+| Pre-conditions | *Argument* -- every parameter is non-`null`. +
+  *Argument* -- `maxDuration` is strictly positive.
 | Errors         | None at preparation time. The duration check is performed at processing time.
 |===
