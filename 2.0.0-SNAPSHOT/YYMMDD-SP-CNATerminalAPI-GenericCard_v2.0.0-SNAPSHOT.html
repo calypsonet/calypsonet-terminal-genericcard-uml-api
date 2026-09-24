@@ -1823,7 +1823,8 @@ of the API. It is provided as a single instance whose accessors each return a fr
 APDU commands with <code>prepareCommand</code>, <code>prepareCommandWithId</code> or <code>prepareCommandWithMaxDuration</code> and processes them through the inherited <code>processCommands()</code>
 operation. Each prepared command MAY carry an optional <strong>command identifier</strong> (<code>commandId</code>) supplied by the
 application, used to retrieve the corresponding response or to identify the failing command in case of error.
-Each prepared command MAY also carry an optional <strong>maximum duration</strong> (<code>maxDuration</code>, in milliseconds) used to
+Each prepared command MAY also carry an optional <strong>maximum duration</strong> (<code>maxDuration</code>, in microseconds, the effective
+resolution of the measurement depending on the implementation) used to
 control the APDU exchange execution time at the individual-command level&#8201;&#8212;&#8201;for example to detect a relay
 attack.</p>
 </div>
@@ -2020,7 +2021,7 @@ attack.</p>
 <th class="tableblock halign-center valign-middle"><p class="tableblock">Parameters</p></th>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><code>commandId</code>  &#8201;&#8212;&#8201;the application-supplied identifier of this command.<br>
   <code>apdu</code>       &#8201;&#8212;&#8201;a non-empty <code>ByteArray</code> containing the raw APDU command.<br>
-  <code>maxDuration</code>&#8201;&#8212;&#8201;the maximum tolerated duration of the APDU exchange, in milliseconds.</p></td>
+  <code>maxDuration</code>&#8201;&#8212;&#8201;the maximum tolerated duration of the APDU exchange, in microseconds.</p></td>
 </tr>
 <tr>
 <th class="tableblock halign-center valign-middle"><p class="tableblock">Returns</p></th>
@@ -2028,7 +2029,8 @@ attack.</p>
 </tr>
 <tr>
 <th class="tableblock halign-center valign-middle"><p class="tableblock">Pre-conditions</p></th>
-<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Argument</strong>&#8201;&#8212;&#8201;every parameter is non-<code>null</code>.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Argument</strong>&#8201;&#8212;&#8201;every parameter is non-<code>null</code>.<br>
+  <strong>Argument</strong>&#8201;&#8212;&#8201;<code>maxDuration</code> is strictly positive.</p></td>
 </tr>
 <tr>
 <th class="tableblock halign-center valign-middle"><p class="tableblock">Errors</p></th>
